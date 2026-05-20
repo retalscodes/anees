@@ -20,7 +20,8 @@ RESPONSE FORMAT:
 - Cite source(s) with URL when available
 - Add brief disclaimer for personal fiqh matters"""
 
-MODELS = ["gemini-2.0-flash", "gemini-1.5-flash"]
+# v1beta supports all current flash models including lite variants
+MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash-8b"]
 
 
 async def ask_deen_question(question: str, context: str) -> dict:

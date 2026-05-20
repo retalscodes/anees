@@ -24,6 +24,28 @@ async def get_prayer_times(lat: float, lng: float, method: int = 3):
         raise HTTPException(status_code=502, detail=str(e))
 
 
+@router.get("/times-by-city")
+async def get_prayer_times_by_city(city: str, country: str = "", method: int = 3):
+    try:
+        today = datetime.now().strftime("%d-%m-%Y")
+        params = {"city": city, "method": method}
+        if country:
+            params["country"] = country
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                f"https://api.aladhan.com/v1/timingsByCity/{today}",
+                params=params
+            )
+            data = resp.json()
+            if not data.get("data", {}).get("timings"):
+                raise HTTPException(status_code=404, detail=f"City not found: {city}")
+            return data
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
+
 @router.get("/hijri")
 async def get_hijri_date():
     try:
