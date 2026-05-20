@@ -1,7 +1,5 @@
 import os
-import asyncio
-from google import genai
-from google.genai import types
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -22,54 +20,79 @@ RESPONSE FORMAT:
 - Cite source(s) with URL when available
 - Add brief disclaimer for personal fiqh matters"""
 
-
-def _sync_generate(api_key: str, prompt: str) -> str:
-    client = genai.Client(api_key=api_key)
-    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
-        try:
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-                config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT)
-            )
-            return response.text
-        except Exception as e:
-            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
-                continue
-            raise
-    raise Exception("All models quota exhausted. Please try again later.")
+MODELS = ["gemini-2.0-flash", "gemini-1.5-flash"]
 
 
 async def ask_deen_question(question: str, context: str) -> dict:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return {
-            "answer": "خدمة الذكاء الاصطناعي غير مفعلة حاليًا.\n\nAI service is not configured. Please contact the developer."
+            "answer": "مفتاح API غير مضبوط. أضف GEMINI_API_KEY في Environment Variables في Render.\n\nAPI key not configured. Add GEMINI_API_KEY to Render environment variables."
         }
 
     if context.strip():
-        prompt = f"""CONTEXT FROM TRUSTED SOURCES (islamqa.info / islamweb.net):
-{context}
-
----
-QUESTION: {question}
-
-Answer based on the context above. Cite the source URLs."""
+        user_text = (
+            f"CONTEXT FROM TRUSTED SOURCES (islamqa.info / islamweb.net):\n{context}\n\n"
+            f"---\nQUESTION: {question}\n\nAnswer based on the context above. Cite source URLs."
+        )
     else:
-        prompt = f"""No specific context was retrieved from trusted sources this time.
-Answer the following Islamic question from your training knowledge. Clearly note that this is general Islamic guidance and recommend the user verify with a qualified scholar for personal matters.
+        user_text = (
+            f"No specific context was retrieved from trusted sources.\n"
+            f"Answer this Islamic question from your training knowledge. "
+            f"Note this is general guidance and recommend consulting a scholar for personal matters.\n\n"
+            f"QUESTION: {question}"
+        )
 
-QUESTION: {question}"""
+    body = {
+        "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "contents": [{"role": "user", "parts": [{"text": user_text}]}],
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1024}
+    }
 
-    try:
-        text = await asyncio.to_thread(_sync_generate, api_key, prompt)
-        return {"answer": text}
-    except Exception as e:
-        err = str(e)
-        if "quota" in err.lower() or "RESOURCE_EXHAUSTED" in err or "429" in err:
-            return {
-                "answer": "عذرًا، وصل أنيس إلى حد الاستخدام اليومي للذكاء الاصطناعي. يرجى المحاولة مجددًا غدًا أو بعد بضع ساعات.\n\nSorry, Anees has reached the daily AI usage limit. Please try again in a few hours."
-            }
-        return {
-            "answer": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.\n\nSorry, an error occurred. Please try again."
-        }
+    async with httpx.AsyncClient(timeout=30) as client:
+        for model in MODELS:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model}:generateContent?key={api_key}"
+            )
+            try:
+                resp = await client.post(url, json=body)
+                data = resp.json()
+
+                if resp.status_code == 429:
+                    continue  # quota on this model, try next
+
+                if resp.status_code in (401, 403):
+                    return {
+                        "answer": (
+                            "مفتاح API غير صحيح أو غير مُفعَّل.\n"
+                            "افتح Render → Environment → تأكد أن GEMINI_API_KEY مضبوط بشكل صحيح.\n\n"
+                            "Invalid API key. In Render, go to Environment and verify GEMINI_API_KEY is set correctly."
+                        )
+                    }
+
+                if resp.status_code != 200:
+                    err = data.get("error", {}).get("message", f"HTTP {resp.status_code}")
+                    return {"answer": f"خطأ من Gemini: {err}"}
+
+                candidates = data.get("candidates", [])
+                if not candidates:
+                    finish = data.get("promptFeedback", {}).get("blockReason", "unknown")
+                    return {"answer": f"لم يُرجع النموذج إجابة (blockReason: {finish}). حاول صياغة السؤال بشكل مختلف."}
+
+                text = candidates[0]["content"]["parts"][0]["text"]
+                return {"answer": text}
+
+            except httpx.TimeoutException:
+                return {
+                    "answer": "انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.\n\nRequest timed out. Please try again."
+                }
+            except Exception as e:
+                return {"answer": f"خطأ غير متوقع: {str(e)[:200]}"}
+
+    return {
+        "answer": (
+            "وصل أنيس إلى حد الاستخدام اليومي لكلا النموذجين. يرجى المحاولة لاحقًا.\n\n"
+            "Daily quota exceeded for all models. Please try again later."
+        )
+    }

@@ -51,8 +51,12 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// Service Worker
+// Service Worker — auto-reload when a new version activates
 if ('serviceWorker' in navigator) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
   navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 

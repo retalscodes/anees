@@ -1,3 +1,9 @@
+function markVerseNums(text) {
+  return text.replace(/﴿([٠-٩\d]+)﴾/g,
+    '<span class="v-num">$1</span>'
+  );
+}
+
 let currentDhikrTab = 'morning';
 let dhikrProgress = {};
 let tasbihCount = 0;
@@ -64,7 +70,7 @@ function renderDhikrPage() {
           <span class="dhikr-title">${item.title}</span>
           <span class="count-badge ${done ? 'done' : ''}">${done ? '✓' : remaining + 'x'}</span>
         </div>
-        <div class="arabic">${item.arabic}</div>
+        <div class="arabic">${markVerseNums(item.arabic)}</div>
         <div class="translation">${item.translation}</div>
         <div class="flex-between mt-8">
           <span class="source-tag">${item.source}</span>

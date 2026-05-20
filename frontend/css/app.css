@@ -297,6 +297,47 @@ html, body {
   margin-bottom: 8px;
 }
 
+/* Verse number badge inside .arabic text */
+.v-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  background: rgba(232,192,96,0.15);
+  border: 1px solid rgba(232,192,96,0.3);
+  border-radius: 50%;
+  font-size: 12px;
+  color: var(--gold);
+  vertical-align: middle;
+  margin: 0 3px;
+  padding: 0 3px;
+  font-family: 'Amiri', serif;
+}
+
+/* Prayer location badge */
+#prayer-location {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#prayer-location button {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  text-decoration: underline;
+  padding: 0;
+}
+
 /* ─── DHIKR PAGE ─── */
 .dhikr-tabs {
   display: flex;

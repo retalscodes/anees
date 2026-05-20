@@ -160,6 +160,39 @@ function renderPrayerTimes() {
       <div class="p-time">${to12h(prayerData[name])}</div>
     </div>
   `).join('');
+
+  // Show detected location with a change button
+  let locBar = document.getElementById('prayer-location');
+  if (!locBar) {
+    locBar = document.createElement('div');
+    locBar.id = 'prayer-location';
+    grid.insertAdjacentElement('afterend', locBar);
+  }
+  const cached = localStorage.getItem('userLocation');
+  if (cached) {
+    const { lat, lng } = JSON.parse(cached);
+    fetchCityName(lat, lng).then(name => {
+      if (name && locBar) {
+        locBar.innerHTML = `<span>📍 ${name}</span><button onclick="changeLocation()">تغيير الموقع</button>`;
+      }
+    });
+  }
+}
+
+async function fetchCityName(lat, lng) {
+  try {
+    const r = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10`,
+      { headers: { 'Accept-Language': 'ar' } }
+    );
+    const d = await r.json();
+    return d.address?.city || d.address?.town || d.address?.county || null;
+  } catch { return null; }
+}
+
+function changeLocation() {
+  localStorage.removeItem('userLocation');
+  showCityInput();
 }
 
 function startCountdown() {
