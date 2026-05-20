@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Anees Icon Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  body { background: #08090e; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif; color: #e8f0ec; gap: 24px; margin: 0; padding: 40px; }
+  canvas { border-radius: 24px; display: block; }
+  .btns { display: flex; gap: 12px; }
+  button { background: #3a7a6a; border: none; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; cursor: pointer; }
+  button:hover { background: #6ec4b4; color: #08090e; }
+  .note { font-size: 12px; color: #6a9a90; text-align: center; max-width: 400px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<canvas id="c" width="512" height="512"></canvas>
+<div class="btns">
+  <button onclick="download(512,'icon-512.png')">⬇ Save icon-512.png</button>
+  <button onclick="download(192,'icon-192.png')">⬇ Save icon-192.png</button>
+</div>
+<p class="note">Save both files into the <code>frontend/icons/</code> folder, then your PWA install prompt will show the logo on mobile.</p>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const S = 512;
+
+function draw() {
+  ctx.clearRect(0, 0, S, S);
+
+  // ── Background ──
+  const bgGrad = ctx.createRadialGradient(S*0.45, S*0.38, 0, S*0.5, S*0.5, S*0.72);
+  bgGrad.addColorStop(0, '#162422');
+  bgGrad.addColorStop(1, '#08090e');
+  roundRect(ctx, 0, 0, S, S, 90, bgGrad);
+
+  // ── Stars ──
+  const stars = [
+    [80,70,2.2,0.7,'#e8c060'],[430,55,1.6,0.5,'#e8c060'],
+    [460,155,1.2,0.4,'#6ec4b4'],[55,210,1.8,0.35,'#6ec4b4'],
+    [390,420,2.0,0.4,'#e8c060'],[95,390,1.2,0.4,'#6ec4b4'],
+    [340,460,1.6,0.35,'#e8c060'],[160,460,1.4,0.3,'#6ec4b4'],
+    [470,330,1.8,0.3,'#e8c060'],[45,310,1.2,0.25,'#6ec4b4'],
+    [310,55,1.0,0.3,'#6ec4b4'],[200,72,1.4,0.25,'#e8c060'],
+  ];
+  stars.forEach(([x,y,r,a,c]) => {
+    ctx.globalAlpha = a;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fillStyle = c;
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  // ── Crescent moon ──
+  const moonX = 256, moonY = 162, moonR = 82;
+  const goldGrad = ctx.createLinearGradient(moonX-moonR, moonY-moonR, moonX+moonR, moonY+moonR);
+  goldGrad.addColorStop(0, '#f0d080');
+  goldGrad.addColorStop(1, '#c9a84c');
+  ctx.globalAlpha = 0.92;
+  ctx.beginPath();
+  ctx.arc(moonX, moonY, moonR, 0, Math.PI*2);
+  ctx.fillStyle = goldGrad;
+  ctx.fill();
+  // Cut the crescent
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.arc(moonX + 56, moonY - 14, 72, 0, Math.PI*2);
+  ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+
+  // ── Moon glow ──
+  const glowGrad = ctx.createRadialGradient(moonX-10, moonY-10, 20, moonX, moonY, 110);
+  glowGrad.addColorStop(0, 'rgba(240,208,128,0.12)');
+  glowGrad.addColorStop(1, 'rgba(240,208,128,0)');
+  ctx.beginPath();
+  ctx.arc(moonX, moonY, 110, 0, Math.PI*2);
+  ctx.fillStyle = glowGrad;
+  ctx.fill();
+
+  // ── Botanical left ──
+  ctx.strokeStyle = '#3a7a6a';
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = 0.55;
+  ctx.beginPath();
+  ctx.moveTo(98, 400);
+  ctx.bezierCurveTo(112, 360, 95, 330, 118, 300);
+  ctx.bezierCurveTo(138, 272, 125, 248, 148, 228);
+  ctx.stroke();
+  // leaves left
+  leaf(ctx, 110, 345, -35, '#3a7a6a', 0.5);
+  leaf(ctx, 134, 282, 15, '#6ec4b4', 0.4);
+  leaf(ctx, 152, 232, -20, '#3a7a6a', 0.35);
+
+  // ── Botanical right ──
+  ctx.beginPath();
+  ctx.moveTo(414, 400);
+  ctx.bezierCurveTo(400, 360, 417, 330, 394, 300);
+  ctx.bezierCurveTo(374, 272, 387, 248, 364, 228);
+  ctx.stroke();
+  leaf(ctx, 402, 345, 35, '#3a7a6a', 0.5);
+  leaf(ctx, 378, 282, -15, '#6ec4b4', 0.4);
+  leaf(ctx, 360, 232, 20, '#3a7a6a', 0.35);
+  ctx.globalAlpha = 1;
+
+  // ── Decorative arc ──
+  ctx.strokeStyle = '#182a28';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(256, 280, 148, Math.PI*0.15, Math.PI*0.85);
+  ctx.stroke();
+
+  // ── Arabic text "أنيس" ──
+  ctx.font = '700 108px Amiri, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.direction = 'rtl';
+
+  // Text glow
+  ctx.shadowColor = 'rgba(110,196,180,0.4)';
+  ctx.shadowBlur = 20;
+
+  const textGrad = ctx.createLinearGradient(156, 350, 356, 420);
+  textGrad.addColorStop(0, '#6ec4b4');
+  textGrad.addColorStop(0.5, '#a8ddd4');
+  textGrad.addColorStop(1, '#6ec4b4');
+  ctx.fillStyle = textGrad;
+  ctx.fillText('أنيس', 256, 390);
+  ctx.shadowBlur = 0;
+
+  // ── Decorative line ──
+  ctx.globalAlpha = 0.35;
+  const lineGrad = ctx.createLinearGradient(140, 430, 372, 430);
+  lineGrad.addColorStop(0, 'transparent');
+  lineGrad.addColorStop(0.2, '#e8c060');
+  lineGrad.addColorStop(0.8, '#e8c060');
+  lineGrad.addColorStop(1, 'transparent');
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(140, 430);
+  ctx.lineTo(372, 430);
+  ctx.stroke();
+
+  // Dots on line ends
+  ctx.fillStyle = '#e8c060';
+  ctx.globalAlpha = 0.6;
+  dot(ctx, 140, 430, 3);
+  dot(ctx, 372, 430, 3);
+  dot(ctx, 256, 430, 2);
+  ctx.globalAlpha = 1;
+}
+
+function roundRect(ctx, x, y, w, h, r, fill) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y); ctx.arcTo(x+w, y, x+w, y+r, r);
+  ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+  ctx.lineTo(x+r, y+h); ctx.arcTo(x, y+h, x, y+h-r, r);
+  ctx.lineTo(x, y+r); ctx.arcTo(x, y, x+r, y, r);
+  ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+}
+
+function leaf(ctx, x, y, angle, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(x, y);
+  ctx.rotate(angle * Math.PI / 180);
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 5, 0, 0, Math.PI*2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function dot(ctx, x, y, r) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function download(size, filename) {
+  const tmp = document.createElement('canvas');
+  tmp.width = tmp.height = size;
+  const tctx = tmp.getContext('2d');
+  tctx.drawImage(canvas, 0, 0, size, size);
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = tmp.toDataURL('image/png');
+  a.click();
+}
+
+// Wait for Amiri font to load before drawing
+document.fonts.load('700 108px Amiri').then(() => {
+  draw();
+}).catch(() => {
+  // Fallback: draw anyway
+  setTimeout(draw, 1200);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Name & Theme Ideas</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0c0c0c; font-family: 'Inter', sans-serif; color: #fff; padding: 24px 16px 60px; }
+
+h2 { font-size: 11px; color: #555; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+.section { margin-bottom: 48px; }
+
+/* ── Names ── */
+.name-cards { display: flex; flex-direction: column; gap: 12px; }
+
+.name-card {
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #222;
+  background: #141414;
+  position: relative;
+  overflow: hidden;
+}
+
+.name-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.name-card.fav::before { background: linear-gradient(90deg, #c9a84c, #f0d070); }
+.name-card.pick2::before { background: linear-gradient(90deg, #6ec4b4, #a0d8d0); }
+.name-card.pick3::before { background: linear-gradient(90deg, #8aabf0, #c0d0ff); }
+.name-card.pick4::before { background: linear-gradient(90deg, #d4789a, #f0a0c0); }
+.name-card.pick5::before { background: linear-gradient(90deg, #a0c070, #c8e090); }
+
+.name-big {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.name-card.fav .name-big { color: #f0d070; }
+.name-card.pick2 .name-big { color: #6ec4b4; }
+.name-card.pick3 .name-big { color: #8aabf0; }
+.name-card.pick4 .name-big { color: #d4789a; }
+.name-card.pick5 .name-big { color: #a0c070; }
+
+.name-ar-big { font-family: 'Amiri', serif; font-size: 26px; opacity: .5; margin-bottom: 10px; }
+.name-desc { font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 10px; }
+.name-wordplay { font-size: 12px; color: #555; font-style: italic; }
+.name-wordplay strong { color: #888; font-style: normal; }
+
+.fav-badge {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(201,168,76,.15);
+  border: 1px solid rgba(201,168,76,.3);
+  color: #c9a84c;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 8px;
+}
+
+.tag-warm { background: rgba(240,192,80,.08); color: #c9a84c; border: 1px solid rgba(240,192,80,.2); }
+.tag-cool { background: rgba(110,196,180,.08); color: #6ec4b4; border: 1px solid rgba(110,196,180,.2); }
+.tag-soft { background: rgba(212,120,154,.08); color: #d4789a; border: 1px solid rgba(212,120,154,.2); }
+
+/* ── Themes ── */
+.theme-row { display: flex; flex-direction: column; gap: 14px; }
+
+.theme-card {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.theme-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.theme-name { font-size: 20px; font-weight: 600; }
+.theme-name-sub { font-size: 12px; opacity: .5; margin-top: 3px; }
+
+.theme-icon { font-size: 36px; }
+
+.theme-mock {
+  padding: 0 20px 20px;
+}
+
+/* Mock app UI */
+.mock-header {
+  border-radius: 14px 14px 0 0;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.mock-body {
+  border-radius: 0 0 14px 14px;
+  padding: 16px;
+}
+
+.mock-prayer-big {
+  font-size: 42px;
+  font-weight: 200;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.mock-prayer-label {
+  font-family: 'Amiri', serif;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.mock-countdown {
+  font-size: 12px;
+  opacity: .6;
+  margin-top: 6px;
+}
+
+.mock-pills {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.mock-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: 'Amiri', serif;
+}
+
+.swatches { display: flex; height: 6px; }
+.swatch { flex: 1; }
+
+.theme-footer {
+  padding: 10px 20px;
+  font-size: 11px;
+  background: rgba(0,0,0,.3);
+  color: #555;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Hybrid theme special */
+.hybrid-label {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, rgba(201,168,76,.2), rgba(110,196,180,.2));
+  color: #c9a84c;
+  border: 1px solid rgba(201,168,76,.2);
+}
+
+/* ── AMBER SMOKE ── */
+.amber { background: #0e0c08; }
+.amber .theme-name { color: #e8c060; }
+.amber .mock-header { background: #181408; }
+.amber .mock-header-text { color: #c8aa80; }
+.amber .mock-body { background: #181408; border: 1px solid #252010; }
+.amber .mock-prayer-label { color: #c8aa80; }
+.amber .mock-prayer-big { color: #e8c060; }
+.amber .mock-pill { background: rgba(232,192,96,.1); color: #e8c060; border: 1px solid rgba(232,192,96,.25); }
+
+/* ── SAGE MIST ── */
+.sage { background: #080f10; }
+.sage .theme-name { color: #c9d4a0; }
+.sage .mock-header { background: #0f1c1e; }
+.sage .mock-header-text { color: #6ec4b4; }
+.sage .mock-body { background: #0f1c1e; border: 1px solid #152a2c; }
+.sage .mock-prayer-label { color: #6ec4b4; }
+.sage .mock-prayer-big { color: #c9d4a0; }
+.sage .mock-pill { background: rgba(110,196,180,.1); color: #6ec4b4; border: 1px solid rgba(110,196,180,.25); }
+
+/* ── MIDNIGHT CRESCENT ── */
+.crescent { background: #07091a; }
+.crescent .theme-name { color: #d4af37; }
+.crescent .mock-header { background: #0e1228; }
+.crescent .mock-header-text { color: #8aabf0; }
+.crescent .mock-body { background: #0e1228; border: 1px solid #1a2040; }
+.crescent .mock-prayer-label { color: #8aabf0; }
+.crescent .mock-prayer-big { color: #d4af37; }
+.crescent .mock-pill { background: rgba(212,175,55,.08); color: #d4af37; border: 1px solid rgba(212,175,55,.25); }
+
+/* ── HYBRID ── */
+.hybrid { background: #08090e; }
+.hybrid .theme-name { background: linear-gradient(90deg, #d4af37, #6ec4b4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hybrid .mock-header { background: #0f1218; }
+.hybrid .mock-header-text { color: #8aabf0; }
+.hybrid .mock-body { background: #0f1218; border: 1px solid #1a2030; }
+.hybrid .mock-prayer-label { color: #6ec4b4; }
+.hybrid .mock-prayer-big { color: #e8c060; }
+.hybrid .mock-pill { background: rgba(110,196,180,.08); color: #6ec4b4; border: 1px solid rgba(110,196,180,.2); }
+.hybrid .mock-pill:nth-child(2) { background: rgba(232,192,96,.08); color: #e8c060; border-color: rgba(232,192,96,.2); }
+</style>
+</head>
+<body>
+
+<!-- ── NAMES ── -->
+<div class="section">
+<h2>Name Plays on أُنس</h2>
+<div class="name-cards">
+
+  <div class="name-card fav">
+    <div class="fav-badge">⭐ top pick</div>
+    <div class="name-big">Uns.</div>
+    <div class="name-ar-big">أُنس</div>
+    <div class="name-desc">Just the word, full stop. Confident. No explanation needed — it stands alone like a good companion should.</div>
+    <div class="name-wordplay">The period makes it feel like a statement, not a product.</div>
+    <span class="tag tag-warm">minimalist · timeless</span>
+  </div>
+
+  <div class="name-card pick2">
+    <div class="name-big">Just Uns</div>
+    <div class="name-ar-big">أُنس فقط</div>
+    <div class="name-desc">"Just us" → "Just Uns" — a quiet wordplay. Sounds like two friends sitting together. Very cozy.</div>
+    <div class="name-wordplay"><strong>Reads as:</strong> "just us" (English) + أُنس (companionship). Two meanings, one feeling.</div>
+    <span class="tag tag-cool">wordplay · warm</span>
+  </div>
+
+  <div class="name-card pick3">
+    <div class="name-big">Anees</div>
+    <div class="name-ar-big">أنيس</div>
+    <div class="name-desc">The intimate companion form of Uns. Anees is the friend who sits with you. Used in classical Arabic poetry for "the one who makes you feel at home."</div>
+    <div class="name-wordplay"><strong>Sounds like:</strong> "a niece" or "earnest" — unintentional but gentle.</div>
+    <span class="tag tag-cool">poetic · classic</span>
+  </div>
+
+  <div class="name-card pick4">
+    <div class="name-big">Yûns</div>
+    <div class="name-ar-big">يونس / أُنس</div>
+    <div class="name-desc">A subtle blend — Yunus (Prophet Jonah's name, يونس) sounds just like "Your Uns" if you say it softly. Spiritual depth baked in.</div>
+    <div class="name-wordplay"><strong>Reads as:</strong> "Yunus" (prophet) + "You + Uns" (your companion). Layered.</div>
+    <span class="tag tag-soft">layered meaning · spiritual</span>
+  </div>
+
+  <div class="name-card pick5">
+    <div class="name-big">Unsa</div>
+    <div class="name-ar-big">أُنسة</div>
+    <div class="name-desc">Feminine form of Uns. Sounds like "once-a" — as in "once a day, your companion." Has a soft, approachable feel.</div>
+    <div class="name-wordplay"><strong>Tagline writes itself:</strong> "Unsa · once a day, every day."</div>
+    <span class="tag tag-warm">feminine · gentle</span>
+  </div>
+
+</div>
+</div>
+
+<!-- ── THEMES ── -->
+<div class="section">
+<h2>The Three You Loved — + a Hybrid</h2>
+<div class="theme-row">
+
+  <!-- Amber Smoke -->
+  <div class="theme-card amber">
+    <div class="theme-header amber">
+      <div>
+        <div class="theme-name">Amber Smoke</div>
+        <div class="theme-name-sub" style="color:#8a7040">دخان العنبر — warm & grounding</div>
+      </div>
+      <div class="theme-icon">🕯️</div>
+    </div>
+    <div class="theme-mock">
+      <div class="mock-header amber">
+        <span class="mock-header-text">🌙 Uns.</span>
+        <span style="font-family:'Amiri',serif;color:#7a6020;font-size:15px">١٥ رمضان ١٤٤٦</span>
+      </div>
+      <div class="mock-body amber">
+        <div class="mock-prayer-label">العشاء</div>
+        <div class="mock-prayer-big">7:42 PM</div>
+        <div class="mock-countdown">في ٤٥ دقيقة</div>
+        <div class="mock-pills">
+          <span class="mock-pill">الفجر 4:51</span>
+          <span class="mock-pill">الظهر 12:30</span>
+          <span class="mock-pill">العصر 3:45</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#0e0c08"></div>
+      <div class="swatch" style="background:#181408"></div>
+      <div class="swatch" style="background:#3a3010"></div>
+      <div class="swatch" style="background:#e8c060"></div>
+      <div class="swatch" style="background:#c8aa80"></div>
+    </div>
+    <div class="theme-footer amber">
+      <span>Oud · Incense · Late nights</span>
+      <span>Cozy but quiet</span>
+    </div>
+  </div>
+
+  <!-- Sage Mist -->
+  <div class="theme-card sage">
+    <div class="theme-header sage">
+      <div>
+        <div class="theme-name">Sage Mist</div>
+        <div class="theme-name-sub" style="color:#3a6a60">ضباب المرج — calm & airy</div>
+      </div>
+      <div class="theme-icon">🌿</div>
+    </div>
+    <div class="theme-mock">
+      <div class="mock-header sage">
+        <span class="mock-header-text">🌙 Uns.</span>
+        <span style="font-family:'Amiri',serif;color:#2a5a50;font-size:15px">١٥ رمضان ١٤٤٦</span>
+      </div>
+      <div class="mock-body sage">
+        <div class="mock-prayer-label">العشاء</div>
+        <div class="mock-prayer-big">7:42 PM</div>
+        <div class="mock-countdown">في ٤٥ دقيقة</div>
+        <div class="mock-pills">
+          <span class="mock-pill">الفجر 4:51</span>
+          <span class="mock-pill">الظهر 12:30</span>
+          <span class="mock-pill">العصر 3:45</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#080f10"></div>
+      <div class="swatch" style="background:#0f1c1e"></div>
+      <div class="swatch" style="background:#1e4a44"></div>
+      <div class="swatch" style="background:#c9d4a0"></div>
+      <div class="swatch" style="background:#6ec4b4"></div>
+    </div>
+    <div class="theme-footer sage">
+      <span>Nature · Peace · Morning walks</span>
+      <span>Freshest of the three</span>
+    </div>
+  </div>
+
+  <!-- Midnight Crescent -->
+  <div class="theme-card crescent">
+    <div class="theme-header crescent">
+      <div>
+        <div class="theme-name">Midnight Crescent</div>
+        <div class="theme-name-sub" style="color:#3a508a">هلال منتصف الليل — deep & rich</div>
+      </div>
+      <div class="theme-icon">🌙</div>
+    </div>
+    <div class="theme-mock">
+      <div class="mock-header crescent">
+        <span class="mock-header-text">🌙 Uns.</span>
+        <span style="font-family:'Amiri',serif;color:#2a3870;font-size:15px">١٥ رمضان ١٤٤٦</span>
+      </div>
+      <div class="mock-body crescent">
+        <div class="mock-prayer-label">العشاء</div>
+        <div class="mock-prayer-big">7:42 PM</div>
+        <div class="mock-countdown">في ٤٥ دقيقة</div>
+        <div class="mock-pills">
+          <span class="mock-pill">الفجر 4:51</span>
+          <span class="mock-pill">الظهر 12:30</span>
+          <span class="mock-pill">العصر 3:45</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#07091a"></div>
+      <div class="swatch" style="background:#0e1228"></div>
+      <div class="swatch" style="background:#1a2560"></div>
+      <div class="swatch" style="background:#d4af37"></div>
+      <div class="swatch" style="background:#8aabf0"></div>
+    </div>
+    <div class="theme-footer crescent">
+      <span>Stars · Qiyam · Depth</span>
+      <span>Most "Islamic app" feel</span>
+    </div>
+  </div>
+
+  <!-- HYBRID -->
+  <div class="theme-card hybrid" style="border-color:rgba(201,168,76,.2)">
+    <div class="theme-header hybrid">
+      <div>
+        <span class="hybrid-label">✦ New suggestion</span>
+        <div class="theme-name">Night Garden</div>
+        <div class="theme-name-sub" style="color:#3a508a">الحديقة الليلية — a blend of all three</div>
+      </div>
+      <div class="theme-icon">🌙🌿</div>
+    </div>
+    <div class="theme-mock">
+      <div class="mock-header hybrid">
+        <span class="mock-header-text">🌙 Uns.</span>
+        <span style="font-family:'Amiri',serif;color:#2a3060;font-size:15px">١٥ رمضان ١٤٤٦</span>
+      </div>
+      <div class="mock-body hybrid">
+        <div class="mock-prayer-label">العشاء</div>
+        <div class="mock-prayer-big" style="color:#e8c060">7:42 PM</div>
+        <div class="mock-countdown">في ٤٥ دقيقة</div>
+        <div class="mock-pills">
+          <span class="mock-pill">الفجر 4:51</span>
+          <span class="mock-pill" style="background:rgba(232,192,96,.08);color:#e8c060;border-color:rgba(232,192,96,.2)">الظهر 12:30</span>
+          <span class="mock-pill">العصر 3:45</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#08090e"></div>
+      <div class="swatch" style="background:#0f1218"></div>
+      <div class="swatch" style="background:#182a28"></div>
+      <div class="swatch" style="background:#e8c060"></div>
+      <div class="swatch" style="background:#6ec4b4"></div>
+    </div>
+    <div class="theme-footer" style="background:rgba(0,0,0,.3);color:#555">
+      <span>Crescent's depth + Sage's calm + Amber's gold</span>
+      <span>Best of all three ✦</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>

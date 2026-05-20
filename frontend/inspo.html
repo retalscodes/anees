@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Deen Buddy — Design Inspo</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; font-family: 'Inter', sans-serif; color: #fff; padding: 24px 16px 60px; }
+h1 { text-align: center; font-size: 14px; color: #666; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 32px; }
+
+.palette-row { display: flex; flex-direction: column; gap: 24px; }
+
+.palette {
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+.palette:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+
+.palette-preview {
+  padding: 24px 20px 20px;
+  position: relative;
+}
+
+.palette-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  opacity: .7;
+}
+
+.palette-name {
+  font-size: 26px;
+  font-weight: 300;
+  margin-bottom: 4px;
+}
+
+.palette-name-ar {
+  font-family: 'Amiri', serif;
+  font-size: 28px;
+  opacity: .7;
+}
+
+.mock-card {
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.mock-prayer-time {
+  font-size: 36px;
+  font-weight: 200;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+.mock-label {
+  font-family: 'Amiri', serif;
+  font-size: 16px;
+  text-align: center;
+  opacity: .6;
+  margin-bottom: 4px;
+}
+
+.mock-pill {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.mock-icon { font-size: 32px; text-align: center; margin-bottom: 6px; }
+
+.swatches {
+  display: flex;
+  height: 8px;
+}
+.swatch { flex: 1; }
+
+.palette-footer {
+  background: rgba(0,0,0,0.3);
+  padding: 12px 20px;
+  font-size: 12px;
+  opacity: .6;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ─── 1. Warm Lantern ─── */
+.lantern { background: #120b06; }
+.lantern .palette-tag { background: rgba(196,98,26,.2); color: #f09050; }
+.lantern .mock-card { background: #1e1008; border: 1px solid #2e1a0a; }
+.lantern .mock-prayer-time { color: #f0c060; }
+.lantern .mock-label { color: #e8986a; }
+.lantern .mock-pill { background: rgba(240,192,96,.12); color: #f0c060; border: 1px solid rgba(240,192,96,.3); }
+
+/* ─── 2. Midnight Crescent ─── */
+.crescent { background: #07091a; }
+.crescent .palette-tag { background: rgba(100,140,220,.15); color: #8aabf0; }
+.crescent .mock-card { background: #0e1228; border: 1px solid #1a2040; }
+.crescent .mock-prayer-time { color: #d4af37; }
+.crescent .mock-label { color: #8aabf0; }
+.crescent .mock-pill { background: rgba(212,175,55,.1); color: #d4af37; border: 1px solid rgba(212,175,55,.3); }
+
+/* ─── 3. Desert Rose ─── */
+.rose { background: #12090e; }
+.rose .palette-tag { background: rgba(180,80,110,.15); color: #d4789a; }
+.rose .mock-card { background: #1c0f18; border: 1px solid #2a1422; }
+.rose .mock-prayer-time { color: #f0c060; }
+.rose .mock-label { color: #d4789a; }
+.rose .mock-pill { background: rgba(212,120,154,.1); color: #d4789a; border: 1px solid rgba(212,120,154,.3); }
+
+/* ─── 4. Sage Mist ─── */
+.sage { background: #080f10; }
+.sage .palette-tag { background: rgba(80,160,145,.15); color: #6ec4b4; }
+.sage .mock-card { background: #0f1c1e; border: 1px solid #152a2c; }
+.sage .mock-prayer-time { color: #c9d4a0; }
+.sage .mock-label { color: #6ec4b4; }
+.sage .mock-pill { background: rgba(110,196,180,.1); color: #6ec4b4; border: 1px solid rgba(110,196,180,.3); }
+
+/* ─── 5. Amber Smoke ─── */
+.amber { background: #0e0c08; }
+.amber .palette-tag { background: rgba(210,165,60,.15); color: #e8c060; }
+.amber .mock-card { background: #181408; border: 1px solid #252010; }
+.amber .mock-prayer-time { color: #e8c060; }
+.amber .mock-label { color: #c8aa80; }
+.amber .mock-pill { background: rgba(232,192,96,.1); color: #e8c060; border: 1px solid rgba(232,192,96,.3); }
+
+/* names section */
+.names-section { margin-top: 40px; }
+.names-section h2 { font-size: 11px; color: #555; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+.names-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.name-card {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 16px 14px;
+}
+.name-en { font-size: 18px; font-weight: 500; color: #fff; margin-bottom: 2px; }
+.name-ar { font-family: 'Amiri', serif; font-size: 20px; color: #c9a84c; margin-bottom: 4px; }
+.name-meaning { font-size: 11px; color: #666; line-height: 1.4; }
+.name-vibe { display: inline-block; font-size: 10px; color: #4a7a6a; background: rgba(74,122,106,.1); border: 1px solid rgba(74,122,106,.2); border-radius: 8px; padding: 2px 8px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<h1>Design Inspo — Deen Buddy</h1>
+
+<div class="palette-row">
+
+  <!-- 1. Warm Lantern -->
+  <div class="palette lantern">
+    <div class="palette-preview lantern">
+      <span class="palette-tag">Option 1</span>
+      <div class="mock-icon">🪔</div>
+      <div class="palette-name" style="color:#f0c060">Warm Lantern</div>
+      <div class="palette-name-ar" style="color:#e8986a">الفانوس الدافئ</div>
+      <div class="mock-card lantern">
+        <div class="mock-label">العشاء</div>
+        <div class="mock-prayer-time">7:42 PM</div>
+        <div style="text-align:center"><span class="mock-pill lantern">في ٤٥ دقيقة</span></div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#120b06"></div>
+      <div class="swatch" style="background:#1e1008"></div>
+      <div class="swatch" style="background:#c4621a"></div>
+      <div class="swatch" style="background:#f0c060"></div>
+      <div class="swatch" style="background:#e8986a"></div>
+    </div>
+    <div class="palette-footer">
+      <span>Amber · Burnt Orange · Warm Brown</span>
+      <span>Lantern / Iftar vibes 🕌</span>
+    </div>
+  </div>
+
+  <!-- 2. Midnight Crescent -->
+  <div class="palette crescent">
+    <div class="palette-preview crescent">
+      <span class="palette-tag" style="background:rgba(100,140,220,.15);color:#8aabf0">Option 2</span>
+      <div class="mock-icon">🌙</div>
+      <div class="palette-name" style="color:#d4af37">Midnight Crescent</div>
+      <div class="palette-name-ar" style="color:#8aabf0">هلال منتصف الليل</div>
+      <div class="mock-card crescent">
+        <div class="mock-label">المغرب</div>
+        <div class="mock-prayer-time">6:18 PM</div>
+        <div style="text-align:center"><span class="mock-pill crescent">في ٢٢ دقيقة</span></div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#07091a"></div>
+      <div class="swatch" style="background:#0e1228"></div>
+      <div class="swatch" style="background:#2a3870"></div>
+      <div class="swatch" style="background:#d4af37"></div>
+      <div class="swatch" style="background:#8aabf0"></div>
+    </div>
+    <div class="palette-footer">
+      <span>Deep Navy · Gold · Starlight Blue</span>
+      <span>Night sky / Crescent moon ✨</span>
+    </div>
+  </div>
+
+  <!-- 3. Desert Rose -->
+  <div class="palette rose">
+    <div class="palette-preview rose">
+      <span class="palette-tag" style="background:rgba(180,80,110,.15);color:#d4789a">Option 3</span>
+      <div class="mock-icon">🌹</div>
+      <div class="palette-name" style="color:#f0c060">Desert Rose</div>
+      <div class="palette-name-ar" style="color:#d4789a">وردة الصحراء</div>
+      <div class="mock-card rose">
+        <div class="mock-label">الفجر</div>
+        <div class="mock-prayer-time">4:51 AM</div>
+        <div style="text-align:center"><span class="mock-pill rose">في ٣ ساعات</span></div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#12090e"></div>
+      <div class="swatch" style="background:#1c0f18"></div>
+      <div class="swatch" style="background:#8a2a50"></div>
+      <div class="swatch" style="background:#f0c060"></div>
+      <div class="swatch" style="background:#d4789a"></div>
+    </div>
+    <div class="palette-footer">
+      <span>Deep Plum · Dusty Rose · Gold</span>
+      <span>Soft, warm, feminine 🌸</span>
+    </div>
+  </div>
+
+  <!-- 4. Sage Mist -->
+  <div class="palette sage">
+    <div class="palette-preview sage">
+      <span class="palette-tag" style="background:rgba(80,160,145,.15);color:#6ec4b4">Option 4</span>
+      <div class="mock-icon">🌿</div>
+      <div class="palette-name" style="color:#c9d4a0">Sage Mist</div>
+      <div class="palette-name-ar" style="color:#6ec4b4">ضباب المرج</div>
+      <div class="mock-card sage">
+        <div class="mock-label">الظهر</div>
+        <div class="mock-prayer-time">12:30 PM</div>
+        <div style="text-align:center"><span class="mock-pill sage">في ١ ساعة</span></div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#080f10"></div>
+      <div class="swatch" style="background:#0f1c1e"></div>
+      <div class="swatch" style="background:#2a5a54"></div>
+      <div class="swatch" style="background:#c9d4a0"></div>
+      <div class="swatch" style="background:#6ec4b4"></div>
+    </div>
+    <div class="palette-footer">
+      <span>Dark Teal · Sage Green · Soft Lime</span>
+      <span>Calm, peaceful, nature 🌱</span>
+    </div>
+  </div>
+
+  <!-- 5. Amber Smoke -->
+  <div class="palette amber">
+    <div class="palette-preview amber">
+      <span class="palette-tag" style="background:rgba(210,165,60,.15);color:#e8c060">Option 5</span>
+      <div class="mock-icon">🕯️</div>
+      <div class="palette-name" style="color:#e8c060">Amber Smoke</div>
+      <div class="palette-name-ar" style="color:#c8aa80">دخان العنبر</div>
+      <div class="mock-card amber">
+        <div class="mock-label">العصر</div>
+        <div class="mock-prayer-time">3:45 PM</div>
+        <div style="text-align:center"><span class="mock-pill amber">في ٣٠ دقيقة</span></div>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch" style="background:#0e0c08"></div>
+      <div class="swatch" style="background:#181408"></div>
+      <div class="swatch" style="background:#6a5820"></div>
+      <div class="swatch" style="background:#e8c060"></div>
+      <div class="swatch" style="background:#c8aa80"></div>
+    </div>
+    <div class="palette-footer">
+      <span>Near-Black · Warm Amber · Wheat</span>
+      <span>Incense / Oud-inspired 🫙</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Name suggestions -->
+<div class="names-section">
+  <h2>Name Ideas</h2>
+  <div class="names-grid">
+
+    <div class="name-card">
+      <div class="name-en">Sakeena</div>
+      <div class="name-ar">سكينة</div>
+      <div class="name-meaning">Tranquility. The divine peace that descends on the heart.</div>
+      <span class="name-vibe">my favourite</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Nour</div>
+      <div class="name-ar">نور</div>
+      <div class="name-meaning">Light. Short, beautiful, universal.</div>
+      <span class="name-vibe">simple & iconic</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Uns</div>
+      <div class="name-ar">أُنس</div>
+      <div class="name-meaning">Companionship & warmth. The feeling of being at ease.</div>
+      <span class="name-vibe">very fitting</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Misbah</div>
+      <div class="name-ar">مصباح</div>
+      <div class="name-meaning">Lantern / lamp that guides in the dark.</div>
+      <span class="name-vibe">poetic</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Sahar</div>
+      <div class="name-ar">سحر</div>
+      <div class="name-meaning">The quiet hour before Fajr. Magical & still.</div>
+      <span class="name-vibe">beautiful timing</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Hidaya</div>
+      <div class="name-ar">هداية</div>
+      <div class="name-meaning">Guidance. What every Muslim seeks.</div>
+      <span class="name-vibe">purposeful</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Wudd</div>
+      <div class="name-ar">ودّ</div>
+      <div class="name-meaning">Affection & love. One of Allah's 99 names.</div>
+      <span class="name-vibe">unique</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Yaqeen</div>
+      <div class="name-ar">يقين</div>
+      <div class="name-meaning">Certainty of faith. A well-known Islamic platform too.</div>
+      <span class="name-vibe">strong</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Qalbi</div>
+      <div class="name-ar">قلبي</div>
+      <div class="name-meaning">"My heart" — intimate, personal companion feel.</div>
+      <span class="name-vibe">cute & warm</span>
+    </div>
+
+    <div class="name-card">
+      <div class="name-en">Naseem</div>
+      <div class="name-ar">نسيم</div>
+      <div class="name-meaning">A gentle breeze. Light, fresh, calm.</div>
+      <span class="name-vibe">airy</span>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

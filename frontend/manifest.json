@@ -1,0 +1,24 @@
+{
+  "name": "Anees — أنيس",
+  "short_name": "Anees",
+  "description": "Your intimate Islamic companion for prayer times, athkar, Quran, and more",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08090e",
+  "theme_color": "#3a7a6a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

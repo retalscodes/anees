@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="night-garden">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#08090e"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Anees"/>
+  <title>Anees — أنيس</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" href="/icons/icon-192.png"/>
+  <link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+  <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header id="header">
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="var(--gold)" opacity="0.9"/>
+      </svg>
+      <span style="color:var(--text);letter-spacing:0.01em">Anees</span>
+      <span style="font-family:'Amiri',serif;color:var(--text-muted);font-size:16px;font-weight:400">أنيس</span>
+    </div>
+    <div id="hijri-date">جاري التحميل...</div>
+  </header>
+
+  <!-- Pages -->
+  <div id="pages">
+
+    <!-- ═══ HOME ═══ -->
+    <div id="page-home" class="page">
+      <div id="next-prayer-card">
+        <div id="next-prayer-label">الصلاة القادمة</div>
+        <div id="next-prayer-name">...</div>
+        <div id="next-prayer-time">--:--</div>
+        <div id="next-prayer-countdown">جاري التحميل...</div>
+      </div>
+
+      <div id="prayers-grid">
+        <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
+        <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
+        <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
+        <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
+        <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
+        <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
+      </div>
+
+      <div class="section-title">حديث اليوم</div>
+      <div class="card" id="daily-hadith">
+        <div class="hadith-text">...</div>
+      </div>
+    </div>
+
+    <!-- ═══ DHIKR ═══ -->
+    <div id="page-dhikr" class="page">
+      <div class="dhikr-tabs">
+        <button class="tab-btn active" data-dhikr-tab="morning">الصباح</button>
+        <button class="tab-btn" data-dhikr-tab="evening">المساء</button>
+        <button class="tab-btn" data-dhikr-tab="afterPrayer">بعد الصلاة</button>
+        <button class="tab-btn" data-dhikr-tab="sleep">النوم</button>
+        <button class="tab-btn" data-dhikr-tab="tasbih">تسبيح</button>
+        <button class="tab-btn" data-dhikr-tab="duas">الأدعية</button>
+      </div>
+
+      <div id="dhikr-list"></div>
+
+      <!-- Tasbih -->
+      <div id="tasbih-section" style="display:none">
+        <div id="tasbih-display">
+          <div id="tasbih-count">0</div>
+          <div id="tasbih-label">سبحان الله</div>
+        </div>
+        <button id="tasbih-btn">اضغط</button>
+        <div id="tasbih-controls">
+          <button class="tasbih-ctrl-btn" id="tasbih-reset">إعادة</button>
+          <button class="tasbih-ctrl-btn" id="tasbih-skip">التالي</button>
+        </div>
+        <div class="card mt-12" style="text-align:center;direction:rtl">
+          <div style="font-family:'Amiri',serif;font-size:16px;color:var(--text-muted)">
+            سبحان الله × ٣٣ &nbsp;|&nbsp; الحمد لله × ٣٣ &nbsp;|&nbsp; الله أكبر × ٣٤
+          </div>
+        </div>
+      </div>
+
+      <!-- Duas -->
+      <div id="duas-section" style="display:none">
+        <div id="duas-list"></div>
+      </div>
+    </div>
+
+    <!-- ═══ ASK ═══ -->
+    <div id="page-ask" class="page">
+      <div class="qa-disclaimer">
+        🔒 أنيس يجيب من مصادر موثوقة فقط: <strong>islamqa.info</strong> و <strong>islamweb.net</strong>
+        <br/>للأمور الشخصية، استشر عالمًا مؤهلًا
+      </div>
+
+      <div id="qa-messages" style="margin-bottom:12px"></div>
+
+      <div id="qa-form">
+        <textarea id="qa-input" placeholder="اسأل سؤالك بالعربي أو الإنجليزي..." rows="1"></textarea>
+        <button id="qa-submit">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ QURAN ═══ -->
+    <div id="page-quran" class="page">
+      <div id="wird-card">
+        <div style="font-family:'Amiri',serif;font-size:20px;color:var(--gold);margin-bottom:16px;text-align:right">
+          الورد اليومي
+        </div>
+        <div id="wird-progress-ring">
+          <div class="ring-container">
+            <svg viewBox="0 0 120 120" width="120" height="120">
+              <g id="wird-ring-svg"></g>
+            </svg>
+            <div class="ring-text">
+              <div class="ring-pct" id="wird-pct">0%</div>
+              <div class="ring-sub" id="wird-sub">0/10 صفحة</div>
+            </div>
+          </div>
+        </div>
+        <div class="wird-controls">
+          <button class="wird-btn primary" id="wird-add-btn" onclick="addWirdPage()">+ صفحة</button>
+          <button class="wird-btn" onclick="document.getElementById('wird-goal-modal').style.display='flex'">تغيير الهدف</button>
+        </div>
+      </div>
+
+      <div id="streak-display">
+        <div id="streak-fire">🔥</div>
+        <div id="streak-info">
+          <div id="streak-count">0</div>
+          <div id="streak-label">يوم متتالي</div>
+        </div>
+      </div>
+
+      <div class="section-title">سجل القراءة</div>
+      <div class="card">
+        <div id="reading-log"></div>
+      </div>
+
+      <!-- Goal modal -->
+      <div id="wird-goal-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-end;padding:16px">
+        <div class="modal-sheet">
+          <div style="font-family:'Amiri',serif;font-size:20px;color:var(--text);margin-bottom:16px">تحديد هدف الورد</div>
+          <input id="wird-goal-input" type="number" min="1" max="604" value="10"
+            style="width:100%;background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px;font-size:16px;text-align:center;outline:none"/>
+          <p class="muted center mt-8">صفحة في اليوم (أقصى حد ٦٠٤ صفحة)</p>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="wird-btn primary" onclick="setWirdGoal();document.getElementById('wird-goal-modal').style.display='none'">حفظ</button>
+            <button class="wird-btn" onclick="document.getElementById('wird-goal-modal').style.display='none'">إلغاء</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MORE ═══ -->
+    <div id="page-more" class="page">
+      <div class="dhikr-tabs">
+        <button class="tab-btn active" data-more-tab="qibla" onclick="switchMoreTab('qibla')">القبلة</button>
+        <button class="tab-btn" data-more-tab="names" onclick="switchMoreTab('names')">الأسماء</button>
+        <button class="tab-btn" data-more-tab="fasting" onclick="switchMoreTab('fasting')">الصيام</button>
+        <button class="tab-btn" data-more-tab="settings" onclick="switchMoreTab('settings')">الإعدادات</button>
+      </div>
+
+      <!-- Qibla -->
+      <div id="more-qibla">
+        <div id="qibla-compass">
+          <div id="compass-ring">
+            <canvas id="qibla-canvas"></canvas>
+          </div>
+          <div id="qibla-degree">--°</div>
+          <div id="qibla-status">جاري تحديد الموقع...</div>
+        </div>
+      </div>
+
+      <!-- 99 Names -->
+      <div id="more-names" style="display:none">
+        <input id="names-search" type="text" placeholder="ابحث عن اسم..." lang="ar"
+          style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:12px 14px;font-size:14px;margin-bottom:14px;outline:none;font-family:'Inter',sans-serif;direction:rtl"/>
+        <div id="names-grid" class="names-grid"></div>
+      </div>
+
+      <!-- Fasting -->
+      <div id="more-fasting" style="display:none">
+        <div class="card" style="text-align:center">
+          <div style="font-family:'Amiri',serif;font-size:17px;color:var(--text-muted);margin-bottom:12px">
+            وَصُومُوا خَيْرٌ لَّكُمْ ۖ إِن كُنتُمْ تَعْلَمُونَ
+          </div>
+          <button class="fast-btn" id="fast-toggle-btn" onclick="toggleFast()">نويت الصيام — انقر للتسجيل</button>
+          <div class="fast-timer" id="fast-timer">--:--</div>
+          <div class="muted">مدة الصيام</div>
+        </div>
+
+        <div class="section-title mt-12">سجل الصيام</div>
+        <div class="card">
+          <div id="fast-log">
+            <p class="muted center" style="padding:16px">لا يوجد سجل بعد</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="more-settings" style="display:none">
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-label">
+              طريقة حساب مواقيت الصلاة
+              <small>Muslim World League موصى بها لمعظم الدول</small>
+            </div>
+            <select class="setting-select" id="prayer-method-select">
+              <option value="1">University of Islamic Sciences, Karachi</option>
+              <option value="2">ISNA — أمريكا الشمالية</option>
+              <option value="3" selected>Muslim World League</option>
+              <option value="4">Umm Al-Qura — السعودية</option>
+              <option value="5">Egyptian General Authority</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              إشعارات الصلاة والأذكار
+              <small>يُفعَّل من المتصفح</small>
+            </div>
+            <button id="notif-btn" class="wird-btn" style="width:auto;padding:8px 14px">تفعيل</button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              الإصدار
+              <small>Deen Buddy v1.0</small>
+            </div>
+            <span class="muted">🌙</span>
+          </div>
+        </div>
+
+        <div class="card" style="text-align:center;direction:rtl">
+          <div style="font-family:'Amiri',serif;font-size:16px;color:var(--text-muted);line-height:2">
+            المصادر المعتمدة<br/>
+            <a href="https://islamqa.info/en" target="_blank" style="color:var(--primary-light)">islamqa.info</a>
+            &nbsp;•&nbsp;
+            <a href="https://islamweb.net/ar/" target="_blank" style="color:var(--primary-light)">islamweb.net</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pages -->
+
+  <!-- Bottom Nav -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-nav="home" onclick="navigate('home')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      الرئيسية
+    </button>
+    <button class="nav-btn" data-nav="dhikr" onclick="navigate('dhikr')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      ذكر
+    </button>
+    <button class="nav-btn" data-nav="ask" onclick="navigate('ask')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      اسأل
+    </button>
+    <button class="nav-btn" data-nav="quran" onclick="navigate('quran')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      القرآن
+    </button>
+    <button class="nav-btn" data-nav="more" onclick="navigate('more')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+      </svg>
+      المزيد
+    </button>
+  </nav>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<!-- Data -->
+<script src="/data/athkar.js"></script>
+<script src="/data/duas.js"></script>
+<script src="/data/names.js"></script>
+
+<!-- JS Modules -->
+<script src="/js/prayer.js"></script>
+<script src="/js/dhikr.js"></script>
+<script src="/js/qa.js"></script>
+<script src="/js/quran.js"></script>
+<script src="/js/more.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
