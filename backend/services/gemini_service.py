@@ -25,12 +25,19 @@ RESPONSE FORMAT:
 
 def _sync_generate(api_key: str, prompt: str) -> str:
     client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT)
-    )
-    return response.text
+    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT)
+            )
+            return response.text
+        except Exception as e:
+            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                continue
+            raise
+    raise Exception("All models quota exhausted. Please try again later.")
 
 
 async def ask_deen_question(question: str, context: str) -> dict:
@@ -58,6 +65,11 @@ QUESTION: {question}"""
         text = await asyncio.to_thread(_sync_generate, api_key, prompt)
         return {"answer": text}
     except Exception as e:
+        err = str(e)
+        if "quota" in err.lower() or "RESOURCE_EXHAUSTED" in err or "429" in err:
+            return {
+                "answer": "عذرًا، وصل أنيس إلى حد الاستخدام اليومي للذكاء الاصطناعي. يرجى المحاولة مجددًا غدًا أو بعد بضع ساعات.\n\nSorry, Anees has reached the daily AI usage limit. Please try again in a few hours."
+            }
         return {
-            "answer": f"عذرًا، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.\n\nSorry, an error occurred. Please try again.\n\n({str(e)[:120]})"
+            "answer": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.\n\nSorry, an error occurred. Please try again."
         }

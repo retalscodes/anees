@@ -28,7 +28,7 @@ async function loadPrayerForPos(pos) {
   const method = localStorage.getItem('prayerMethod') || '3';
   const resp = await fetch(`/api/prayer/times?lat=${pos.lat}&lng=${pos.lng}&method=${method}`);
   const data = await resp.json();
-  if (!data.data?.timings) throw new Error('Bad response');
+  if (!resp.ok || !data.data?.timings) throw new Error('تعذر تحميل مواقيت الصلاة. حاول مرة أخرى.');
   prayerData = data.data.timings;
   renderPrayerTimes();
   startCountdown();
@@ -83,13 +83,13 @@ function showCityInput() {
   if (!card) return;
   card.innerHTML = `
     <div style="padding:8px 4px">
-      <div style="color:rgba(255,255,255,0.65);font-size:13px;margin-bottom:12px">
+      <div style="color:rgba(255,255,255,0.65);font-size:13px;margin-bottom:12px;text-align:center">
         أدخل مدينتك لعرض مواقيت الصلاة
       </div>
-      <input id="city-input" type="text" placeholder="مثال: عمّان، الرياض، القاهرة..."
+      <input id="city-input" type="text" placeholder="e.g. Amman, Riyadh, Cairo, London..."
         style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;
-               color:#fff;padding:11px 14px;width:100%;font-size:15px;text-align:right;
-               outline:none;direction:rtl;font-family:'Amiri',serif;margin-bottom:10px"
+               color:#fff;padding:11px 14px;width:100%;font-size:15px;
+               outline:none;font-family:'Inter',sans-serif;margin-bottom:10px;direction:ltr"
         onkeydown="if(event.key==='Enter')searchCity()"/>
       <button onclick="searchCity()"
         style="background:rgba(110,196,180,0.25);border:1px solid rgba(110,196,180,0.45);

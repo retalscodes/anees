@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anees-v1';
+const CACHE_NAME = 'anees-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
