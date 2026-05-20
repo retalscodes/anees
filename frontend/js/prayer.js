@@ -177,6 +177,17 @@ function getNextPrayer(timings) {
 }
 
 function renderPrayerTimes(cityName) {
+  // Restore card structure if showCityInput() replaced it
+  const card = document.getElementById('next-prayer-card');
+  if (card && !document.getElementById('next-prayer-name')) {
+    card.innerHTML = `
+      <div id="next-prayer-label" data-i18n="next_prayer">الصلاة القادمة</div>
+      <div id="next-prayer-name"></div>
+      <div id="next-prayer-time">--:--</div>
+      <div id="next-prayer-countdown"></div>
+    `;
+  }
+
   const next = getNextPrayer(prayerData);
   document.getElementById('next-prayer-name').textContent = PRAYER_NAMES[next.name]?.ar || next.name;
   document.getElementById('next-prayer-time').textContent = to12h(next.time);

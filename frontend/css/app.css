@@ -1151,3 +1151,78 @@ select.setting-select {
   40% { content: '..'; }
   60%, 100% { content: '...'; }
 }
+
+/* ─── Language Selection Modal ─── */
+#lang-modal {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+#lang-modal-inner {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.lang-modal-moon { font-size: 52px; margin-bottom: 16px; }
+
+.lang-modal-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+  font-family: 'Inter', 'Amiri', sans-serif;
+}
+
+.lang-modal-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+}
+
+.lang-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: border-color 0.2s, background 0.2s;
+  direction: ltr;
+  text-align: left;
+}
+
+.lang-btn:active, .lang-btn:hover {
+  border-color: var(--primary);
+  background: rgba(58,122,106,0.12);
+}
+
+.lang-btn-flag { font-size: 30px; flex-shrink: 0; }
+
+.lang-btn-name {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+.lang-btn-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-family: 'Amiri', sans-serif;
+}
