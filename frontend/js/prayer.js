@@ -13,51 +13,119 @@ let prayerData = null;
 let countdownInterval = null;
 
 async function initPrayer() {
-  try {
-    const pos = await getPosition();
-    const method = localStorage.getItem('prayerMethod') || '3';
-    const resp = await fetch(`/api/prayer/times?lat=${pos.lat}&lng=${pos.lng}&method=${method}`);
-    const data = await resp.json();
-    prayerData = data.data.timings;
-    renderPrayerTimes();
-    startCountdown();
-  } catch (e) {
-    document.getElementById('next-prayer-name').textContent = 'تعذر التحميل';
-    document.getElementById('next-prayer-time').textContent = '--:--';
-  }
-
   loadHijriDate();
   loadDailyHadith();
+
+  try {
+    const pos = await getPosition();
+    await loadPrayerForPos(pos);
+  } catch (e) {
+    showCityInput();
+  }
+}
+
+async function loadPrayerForPos(pos) {
+  const method = localStorage.getItem('prayerMethod') || '3';
+  const resp = await fetch(`/api/prayer/times?lat=${pos.lat}&lng=${pos.lng}&method=${method}`);
+  const data = await resp.json();
+  if (!data.data?.timings) throw new Error('Bad response');
+  prayerData = data.data.timings;
+  renderPrayerTimes();
+  startCountdown();
 }
 
 async function getPosition() {
+  // Return cached if fresh (1 hour)
   const cached = localStorage.getItem('userLocation');
   if (cached) {
     const loc = JSON.parse(cached);
-    if (Date.now() - loc.ts < 3600000) return loc;
+    if (loc.lat && loc.lng && Date.now() - loc.ts < 3600000) return loc;
   }
 
-  // Try GPS first
+  // 1. GPS
   if (navigator.geolocation) {
     try {
-      const loc = await new Promise((resolve, reject) => {
+      const loc = await new Promise((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now() }),
+          p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, ts: Date.now() }),
           reject,
-          { timeout: 8000 }
-        );
-      });
+          { timeout: 7000 }
+        )
+      );
       localStorage.setItem('userLocation', JSON.stringify(loc));
       return loc;
-    } catch (e) { /* fall through to IP */ }
+    } catch (e) { /* try IP */ }
   }
 
-  // Fallback: IP-based location (no permission needed)
-  const resp = await fetch('https://ipapi.co/json/');
-  const data = await resp.json();
-  const loc = { lat: data.latitude, lng: data.longitude, ts: Date.now() };
-  localStorage.setItem('userLocation', JSON.stringify(loc));
-  return loc;
+  // 2. Multiple IP geolocation fallbacks
+  const services = [
+    async () => { const d = await (await fetch('https://ipwho.is/')).json(); return { lat: d.latitude, lng: d.longitude }; },
+    async () => { const d = await (await fetch('https://ipapi.co/json/')).json(); return { lat: d.latitude, lng: d.longitude }; },
+    async () => { const d = await (await fetch('https://ip-api.com/json')).json(); return { lat: d.lat, lng: d.lon }; },
+  ];
+
+  for (const fn of services) {
+    try {
+      const { lat, lng } = await fn();
+      if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+        const loc = { lat, lng, ts: Date.now() };
+        localStorage.setItem('userLocation', JSON.stringify(loc));
+        return loc;
+      }
+    } catch (e) { /* next service */ }
+  }
+
+  throw new Error('Location unavailable');
+}
+
+function showCityInput() {
+  const card = document.getElementById('next-prayer-card');
+  if (!card) return;
+  card.innerHTML = `
+    <div style="padding:8px 4px">
+      <div style="color:rgba(255,255,255,0.65);font-size:13px;margin-bottom:12px">
+        أدخل مدينتك لعرض مواقيت الصلاة
+      </div>
+      <input id="city-input" type="text" placeholder="مثال: عمّان، الرياض، القاهرة..."
+        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;
+               color:#fff;padding:11px 14px;width:100%;font-size:15px;text-align:right;
+               outline:none;direction:rtl;font-family:'Amiri',serif;margin-bottom:10px"
+        onkeydown="if(event.key==='Enter')searchCity()"/>
+      <button onclick="searchCity()"
+        style="background:rgba(110,196,180,0.25);border:1px solid rgba(110,196,180,0.45);
+               color:#6ec4b4;padding:10px;border-radius:10px;font-size:14px;
+               cursor:pointer;width:100%;font-family:'Amiri',serif">
+        بحث 🔍
+      </button>
+      <div id="city-error" style="color:#e05555;font-size:12px;margin-top:8px;text-align:center"></div>
+    </div>
+  `;
+}
+
+async function searchCity() {
+  const input = document.getElementById('city-input');
+  const errEl = document.getElementById('city-error');
+  const city = input?.value?.trim();
+  if (!city) return;
+
+  input.disabled = true;
+  if (errEl) errEl.textContent = '';
+
+  try {
+    const resp = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`,
+      { headers: { 'Accept-Language': 'ar,en' } }
+    );
+    const data = await resp.json();
+    if (!data[0]) throw new Error('لم يتم العثور على المدينة');
+
+    const loc = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), ts: Date.now() };
+    localStorage.setItem('userLocation', JSON.stringify(loc));
+    await loadPrayerForPos(loc);
+  } catch (e) {
+    if (errEl) errEl.textContent = e.message || 'خطأ في البحث، حاول مرة أخرى';
+    if (input) input.disabled = false;
+  }
 }
 
 function to12h(time24) {
@@ -70,14 +138,12 @@ function to12h(time24) {
 function getNextPrayer(timings) {
   const now = new Date();
   const nowMins = now.getHours() * 60 + now.getMinutes();
-
   for (const name of PRAYER_ORDER) {
     if (name === 'Sunrise') continue;
     const [h, m] = timings[name].split(':').map(Number);
     const prayerMins = h * 60 + m;
     if (prayerMins > nowMins) return { name, time: timings[name], mins: prayerMins };
   }
-  // Next is Fajr tomorrow
   const [h, m] = timings['Fajr'].split(':').map(Number);
   return { name: 'Fajr', time: timings['Fajr'], mins: h * 60 + m + 1440 };
 }
@@ -112,11 +178,7 @@ function updateCountdown() {
   const hrs = Math.floor(diff / 60);
   const mins = diff % 60;
   const el = document.getElementById('next-prayer-countdown');
-  if (el) {
-    el.textContent = hrs > 0
-      ? `في ${hrs} ساعة و ${mins} دقيقة`
-      : `في ${mins} دقيقة`;
-  }
+  if (el) el.textContent = hrs > 0 ? `في ${hrs} ساعة و ${mins} دقيقة` : `في ${mins} دقيقة`;
 }
 
 async function loadHijriDate() {
