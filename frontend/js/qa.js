@@ -1,11 +1,9 @@
-let qaHistory = [];
+let qaStarted = false;
 
 function initQA() {
-  const form = document.getElementById('qa-form');
   const input = document.getElementById('qa-input');
   const submit = document.getElementById('qa-submit');
 
-  // Auto-resize textarea
   input.addEventListener('input', () => {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
@@ -26,14 +24,27 @@ function isArabic(text) {
   return arabicChars > text.length * 0.2;
 }
 
+function askSuggestion(text) {
+  const input = document.getElementById('qa-input');
+  input.value = text;
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  submitQuestion();
+}
+
 async function submitQuestion() {
   const input = document.getElementById('qa-input');
   const submit = document.getElementById('qa-submit');
   const question = input.value.trim();
-
   if (!question) return;
 
   const arabic = isArabic(question);
+
+  if (!qaStarted) {
+    qaStarted = true;
+    const empty = document.getElementById('qa-empty');
+    if (empty) empty.style.display = 'none';
+  }
 
   addMessage('user', question, arabic);
   input.value = '';
@@ -49,9 +60,9 @@ async function submitQuestion() {
       body: JSON.stringify({ question }),
     });
 
-    if (!resp.ok) throw new Error('Request failed');
-    const data = await resp.json();
     removeMessage(loadingId);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
     addMessage('assistant', data.answer);
   } catch (e) {
     removeMessage(loadingId);
@@ -65,7 +76,7 @@ async function submitQuestion() {
 
 function addMessage(role, text, arabic = false) {
   const container = document.getElementById('qa-messages');
-  const id = 'msg-' + Date.now();
+  const id = 'msg-' + Date.now() + Math.random();
   const div = document.createElement('div');
   div.id = id;
   div.className = `qa-message ${role}${role === 'user' && !arabic ? ' ltr' : ''}`;

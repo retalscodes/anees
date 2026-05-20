@@ -1,47 +1,63 @@
 import os
+import asyncio
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
 SYSTEM_PROMPT = """You are Anees (أنيس), a trusted Islamic companion and Q&A assistant for Sunni Muslims (Ahlus Sunnah wal Jama'ah).
 
 STRICT RULES:
-1. Answer ONLY based on the provided context from islamqa.info and islamweb.net.
-2. If context is insufficient, respond clearly in the question's language: "لا أملك معلومات كافية من المصادر الموثوقة. يُرجى استشارة عالم مؤهل." / "I don't have sufficient information from trusted sources. Please consult a qualified scholar."
-3. NEVER fabricate hadiths, Quranic verses, or Islamic rulings.
-4. Always cite the source URL at the end of your answer.
-5. Maintain strictly Sunni perspective. Never include Shia, Sufi extremist, or innovated opinions.
-6. For sensitive personal matters (marriage, divorce, inheritance), always add a note to consult a local scholar.
-7. Detect the language of the question and answer in the same language (English, Modern Standard Arabic, or Jordanian/Levantine dialect).
-8. Keep the tone respectful, warm, and scholarly.
+1. Answer based on the provided context from islamqa.info and islamweb.net when available. If no context was retrieved, answer from your training knowledge while noting this is general Islamic guidance.
+2. NEVER fabricate hadiths, Quranic verses, or Islamic rulings.
+3. Cite source URLs when context was provided.
+4. Maintain strictly Sunni (Ahlus Sunnah) perspective. Never include Shia, Sufi extremist, or innovated opinions.
+5. For personal matters (marriage, divorce, inheritance), always recommend consulting a local qualified scholar.
+6. Detect the language of the question and answer in the same language: English, Modern Standard Arabic, or Jordanian/Levantine dialect.
+7. Keep the tone respectful, warm, and scholarly.
 
 RESPONSE FORMAT:
-- Answer clearly and concisely based on context
-- Cite source(s) with URL
+- Answer clearly and concisely
+- Cite source(s) with URL when available
 - Add brief disclaimer for personal fiqh matters"""
 
 
-async def ask_deen_question(question: str, context: str) -> dict:
-    if not context.strip():
-        return {
-            "answer": "لم أجد معلومات كافية من المصادر الموثوقة للإجابة على هذا السؤال. يُرجى استشارة عالم مؤهل.\n\nI couldn't find sufficient information from trusted sources. Please consult a qualified scholar.",
-        }
-
-    prompt = f"""CONTEXT FROM TRUSTED SOURCES:
-{context}
-
----
-QUESTION: {question}
-
-Answer based strictly on the context above."""
-
+def _sync_generate(api_key: str, prompt: str) -> str:
+    client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=prompt,
         config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT)
     )
-    return {"answer": response.text}
+    return response.text
+
+
+async def ask_deen_question(question: str, context: str) -> dict:
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return {
+            "answer": "خدمة الذكاء الاصطناعي غير مفعلة حاليًا.\n\nAI service is not configured. Please contact the developer."
+        }
+
+    if context.strip():
+        prompt = f"""CONTEXT FROM TRUSTED SOURCES (islamqa.info / islamweb.net):
+{context}
+
+---
+QUESTION: {question}
+
+Answer based on the context above. Cite the source URLs."""
+    else:
+        prompt = f"""No specific context was retrieved from trusted sources this time.
+Answer the following Islamic question from your training knowledge. Clearly note that this is general Islamic guidance and recommend the user verify with a qualified scholar for personal matters.
+
+QUESTION: {question}"""
+
+    try:
+        text = await asyncio.to_thread(_sync_generate, api_key, prompt)
+        return {"answer": text}
+    except Exception as e:
+        return {
+            "answer": f"عذرًا، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.\n\nSorry, an error occurred. Please try again.\n\n({str(e)[:120]})"
+        }
