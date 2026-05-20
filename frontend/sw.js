@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anees-v6';
+const CACHE_NAME = 'anees-v7';
 const SHELL = ['/', '/index.html', '/css/app.css', '/data/athkar.js', '/data/duas.js', '/data/names.js'];
 
 self.addEventListener('install', (e) => {

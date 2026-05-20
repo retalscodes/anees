@@ -515,10 +515,13 @@ html, body {
 
 /* ─── Q&A PAGE ─── */
 #page-ask {
-  display: flex !important;
   flex-direction: column;
   overflow: hidden !important;
   padding: 0 !important;
+}
+
+#page-ask.active {
+  display: flex !important;
 }
 
 #qa-body {
