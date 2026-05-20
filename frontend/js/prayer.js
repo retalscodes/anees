@@ -31,24 +31,33 @@ async function initPrayer() {
 }
 
 async function getPosition() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject(new Error('Geolocation not supported'));
-    const cached = localStorage.getItem('userLocation');
-    if (cached) {
-      const loc = JSON.parse(cached);
-      const age = Date.now() - loc.ts;
-      if (age < 3600000) return resolve(loc); // 1 hour cache
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now() };
-        localStorage.setItem('userLocation', JSON.stringify(loc));
-        resolve(loc);
-      },
-      reject,
-      { timeout: 8000 }
-    );
-  });
+  const cached = localStorage.getItem('userLocation');
+  if (cached) {
+    const loc = JSON.parse(cached);
+    if (Date.now() - loc.ts < 3600000) return loc;
+  }
+
+  // Try GPS first
+  if (navigator.geolocation) {
+    try {
+      const loc = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now() }),
+          reject,
+          { timeout: 8000 }
+        );
+      });
+      localStorage.setItem('userLocation', JSON.stringify(loc));
+      return loc;
+    } catch (e) { /* fall through to IP */ }
+  }
+
+  // Fallback: IP-based location (no permission needed)
+  const resp = await fetch('https://ipapi.co/json/');
+  const data = await resp.json();
+  const loc = { lat: data.latitude, lng: data.longitude, ts: Date.now() };
+  localStorage.setItem('userLocation', JSON.stringify(loc));
+  return loc;
 }
 
 function to12h(time24) {
