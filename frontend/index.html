@@ -219,6 +219,9 @@
           <button id="mushaf-next-btn" class="mushaf-nav-btn" onclick="mushafNextPage()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
+          <button class="mushaf-nav-btn mushaf-fs-btn" onclick="enterMushafFullscreen()" title="قراءة بالشاشة الكاملة">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
         </div>
         <div id="mushaf-content" class="mushaf-content">
           <div class="mushaf-loading">
@@ -557,6 +560,61 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- Mushaf Fullscreen Overlay -->
+<div id="mushaf-fs" class="mushaf-fs-overlay">
+  <div class="mushaf-fs-topbar">
+    <span id="mushaf-fs-juz" class="mushaf-fs-juz"></span>
+    <button class="mushaf-fs-close" onclick="exitMushafFullscreen()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <span id="mushaf-fs-surah" class="mushaf-fs-surah"></span>
+  </div>
+  <div id="mushaf-fs-content" class="mushaf-fs-content"></div>
+  <div class="mushaf-fs-footer">
+    <span id="mushaf-fs-page" class="mushaf-fs-page-num"></span>
+  </div>
+</div>
+
+<!-- Verse Context Menu -->
+<div id="verse-ctx-menu" class="verse-ctx-menu" onclick="if(event.target===this)closeVerseMenu()">
+  <div class="verse-ctx-inner">
+    <div id="verse-ctx-ref" class="verse-ctx-ref"></div>
+    <div class="verse-ctx-actions">
+      <button class="verse-ctx-btn" onclick="bookmarkVerseFromMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <span>حفظ الآية</span>
+      </button>
+      <button class="verse-ctx-btn" onclick="showVerseTafsir()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>تفسير</span>
+      </button>
+      <button class="verse-ctx-btn" onclick="copyVerseText()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>نسخ</span>
+      </button>
+      <button class="verse-ctx-btn" onclick="shareVerseText()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span>مشاركة</span>
+      </button>
+    </div>
+    <button class="verse-ctx-cancel" onclick="closeVerseMenu()">إلغاء</button>
+  </div>
+</div>
+
+<!-- Tafsir Panel -->
+<div id="verse-tafsir-panel" class="verse-tafsir-panel" onclick="if(event.target===this)closeVerseTafsir()">
+  <div class="verse-tafsir-inner">
+    <div class="verse-tafsir-header">
+      <span id="verse-tafsir-ref" class="verse-tafsir-ref"></span>
+      <button onclick="closeVerseTafsir()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="verse-tafsir-source">التفسير الميسر — وزارة الشؤون الإسلامية</div>
+    <div id="verse-tafsir-body" class="verse-tafsir-body"></div>
+  </div>
+</div>
 
 <!-- Data -->
 <script src="/data/athkar.js"></script>

@@ -65,6 +65,9 @@ let mushafPage = 1;
 const pageCache = {};
 let mushafTouchStartX = 0;
 let mushafTouchStartY = 0;
+let mushafFullscreen = false;
+let currentPageMeta = { surahName: '', juz: 1 };
+let longPressTimer = null;
 
 function initQuran() {
   loadWirdData();
@@ -166,30 +169,14 @@ function renderMushafContent(ayahs) {
   const content = document.getElementById('mushaf-content');
   if (!content) return;
 
-  // Group by surah to show surah headers
+  // Track page meta from first ayah
+  if (ayahs.length) {
+    currentPageMeta.surahName = ayahs[ayahs.length - 1].surah.name;
+    currentPageMeta.juz = ayahs[0].juz || 1;
+  }
+
   let html = '';
   let lastSurahNum = null;
-
-  ayahs.forEach(ayah => {
-    const surahNum = ayah.surah.number;
-    if (surahNum !== lastSurahNum) {
-      lastSurahNum = surahNum;
-      if (surahNum !== 9) { // No bismillah for Al-Tawba
-        html += `
-          <div class="mushaf-surah-header">
-            <div class="mushaf-surah-name">سُورَةُ ${ayah.surah.name.replace('سورة','').trim()}</div>
-            <div class="mushaf-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-          </div>
-        `;
-      } else {
-        html += `<div class="mushaf-surah-header"><div class="mushaf-surah-name">سُورَةُ التَّوْبَة</div></div>`;
-      }
-    }
-  });
-
-  // Render as continuous flowing text with verse markers
-  html = '';
-  lastSurahNum = null;
 
   ayahs.forEach(ayah => {
     const surahNum = ayah.surah.number;
@@ -202,10 +189,22 @@ function renderMushafContent(ayahs) {
           : ''}
       </div>`;
     }
-    html += `<span class="mushaf-verse">${ayah.text} <span class="mushaf-vnum">${toArabicNum(ayah.numberInSurah)}</span> </span>`;
+    html += `<span class="mushaf-verse" data-surah="${surahNum}" data-ayah="${ayah.numberInSurah}" data-text="${encodeURIComponent(ayah.text)}">${ayah.text} <span class="mushaf-vnum">${toArabicNum(ayah.numberInSurah)}</span> </span>`;
   });
 
-  content.innerHTML = `<div class="mushaf-page-text" dir="rtl">${html}</div>`;
+  const pageHtml = `<div class="mushaf-page-text" dir="rtl">${html}</div>`;
+  content.innerHTML = pageHtml;
+  setupVerseLongPress(content);
+
+  // Mirror into fullscreen if active
+  if (mushafFullscreen) {
+    const fsContent = document.getElementById('mushaf-fs-content');
+    if (fsContent) {
+      fsContent.innerHTML = pageHtml;
+      setupVerseLongPress(fsContent);
+    }
+    updateMushafFSMeta();
+  }
 }
 
 function mushafPrevPage() {
@@ -367,4 +366,174 @@ function setWirdGoal() {
     renderWirdCard();
     showToast('تم حفظ الهدف');
   }
+}
+
+// ─── Mushaf Fullscreen ────────────────────────────────────────────────
+function enterMushafFullscreen() {
+  mushafFullscreen = true;
+  const fs = document.getElementById('mushaf-fs');
+  if (!fs) return;
+
+  const content = document.getElementById('mushaf-content');
+  const fsContent = document.getElementById('mushaf-fs-content');
+  if (content && fsContent) fsContent.innerHTML = content.innerHTML;
+
+  updateMushafFSMeta();
+  fs.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+  setupVerseLongPress(fsContent);
+  setupFSSwipe(fsContent);
+}
+
+function exitMushafFullscreen() {
+  mushafFullscreen = false;
+  const fs = document.getElementById('mushaf-fs');
+  if (fs) fs.classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+function updateMushafFSMeta() {
+  const surahEl = document.getElementById('mushaf-fs-surah');
+  const juzEl   = document.getElementById('mushaf-fs-juz');
+  const pageEl  = document.getElementById('mushaf-fs-page');
+  if (surahEl) surahEl.textContent = currentPageMeta.surahName;
+  if (juzEl)   juzEl.textContent   = `الجزء ${toArabicNum(currentPageMeta.juz)}`;
+  if (pageEl)  pageEl.textContent  = toArabicNum(mushafPage);
+}
+
+function setupFSSwipe(container) {
+  if (!container) return;
+  let sx = 0, sy = 0;
+  container.addEventListener('touchstart', e => {
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, { passive: true });
+  container.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) mushafNextPage();
+      else mushafPrevPage();
+    }
+  }, { passive: true });
+}
+
+// ─── Verse Long-Press ─────────────────────────────────────────────────
+function setupVerseLongPress(container) {
+  if (!container) return;
+  container.querySelectorAll('.mushaf-verse').forEach(span => {
+    span.addEventListener('touchstart', e => {
+      const target = e.currentTarget;
+      longPressTimer = setTimeout(() => {
+        target.classList.add('verse-highlighted');
+        const surah = target.dataset.surah;
+        const ayah  = target.dataset.ayah;
+        const text  = decodeURIComponent(target.dataset.text || '');
+        showVerseMenu(surah, ayah, text, target);
+      }, 700);
+    }, { passive: true });
+
+    span.addEventListener('touchend', () => {
+      clearTimeout(longPressTimer);
+    }, { passive: true });
+
+    span.addEventListener('touchmove', () => {
+      clearTimeout(longPressTimer);
+    }, { passive: true });
+  });
+}
+
+function showVerseMenu(surah, ayah, text, targetEl) {
+  // Clear previous highlight
+  document.querySelectorAll('.verse-highlighted').forEach(el => el.classList.remove('verse-highlighted'));
+  if (targetEl) targetEl.classList.add('verse-highlighted');
+
+  const menu = document.getElementById('verse-ctx-menu');
+  if (!menu) return;
+
+  menu.dataset.surah = surah;
+  menu.dataset.ayah  = ayah;
+  menu.dataset.text  = encodeURIComponent(text);
+  document.getElementById('verse-ctx-ref').textContent = `${currentPageMeta.surahName} : ${toArabicNum(ayah)}`;
+
+  menu.classList.add('visible');
+}
+
+function closeVerseMenu() {
+  const menu = document.getElementById('verse-ctx-menu');
+  if (menu) menu.classList.remove('visible');
+  document.querySelectorAll('.verse-highlighted').forEach(el => el.classList.remove('verse-highlighted'));
+}
+
+function copyVerseText() {
+  const menu = document.getElementById('verse-ctx-menu');
+  const text = decodeURIComponent(menu?.dataset.text || '');
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => showToast('تم نسخ الآية ✓')).catch(() => showToast('تعذّر النسخ'));
+  closeVerseMenu();
+}
+
+function shareVerseText() {
+  const menu  = document.getElementById('verse-ctx-menu');
+  const text  = decodeURIComponent(menu?.dataset.text || '');
+  const surah = menu?.dataset.surah;
+  const ayah  = menu?.dataset.ayah;
+  const ref   = `${currentPageMeta.surahName} (${ayah})`;
+  if (!text) return;
+  if (navigator.share) {
+    navigator.share({ text: `${text}\n\n— ${ref}` }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text}\n\n— ${ref}`).then(() => showToast('تم نسخ الآية ✓'));
+  }
+  closeVerseMenu();
+}
+
+function bookmarkVerseFromMenu() {
+  const menu  = document.getElementById('verse-ctx-menu');
+  const surah = menu?.dataset.surah;
+  const ayah  = menu?.dataset.ayah;
+  const text  = decodeURIComponent(menu?.dataset.text || '');
+  if (!surah || !ayah) return;
+
+  const bookmarks = JSON.parse(localStorage.getItem('anees_bookmarks') || '[]');
+  const key = `${surah}:${ayah}`;
+  const exists = bookmarks.find(b => b.key === key);
+  if (exists) {
+    showToast('الآية محفوظة مسبقًا');
+  } else {
+    bookmarks.unshift({ key, surah, ayah, text, surahName: currentPageMeta.surahName, page: mushafPage, savedAt: Date.now() });
+    localStorage.setItem('anees_bookmarks', JSON.stringify(bookmarks.slice(0, 100)));
+    showToast('تم حفظ الآية 🔖');
+  }
+  closeVerseMenu();
+}
+
+async function showVerseTafsir() {
+  const menu  = document.getElementById('verse-ctx-menu');
+  const surah = menu?.dataset.surah;
+  const ayah  = menu?.dataset.ayah;
+  if (!surah || !ayah) return;
+  closeVerseMenu();
+
+  const tafsirEl = document.getElementById('verse-tafsir-panel');
+  const tafsirBody = document.getElementById('verse-tafsir-body');
+  const tafsirRef  = document.getElementById('verse-tafsir-ref');
+  if (!tafsirEl) return;
+
+  tafsirRef.textContent = `${currentPageMeta.surahName} — الآية ${toArabicNum(ayah)}`;
+  tafsirBody.textContent = 'جاري تحميل التفسير...';
+  tafsirEl.classList.add('visible');
+
+  try {
+    const resp = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.muyassar`);
+    const data = await resp.json();
+    tafsirBody.textContent = data?.data?.text || 'تعذّر تحميل التفسير.';
+  } catch {
+    tafsirBody.textContent = 'تعذّر تحميل التفسير. تحقق من الاتصال.';
+  }
+}
+
+function closeVerseTafsir() {
+  const tafsirEl = document.getElementById('verse-tafsir-panel');
+  if (tafsirEl) tafsirEl.classList.remove('visible');
 }
