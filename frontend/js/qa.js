@@ -61,14 +61,23 @@ async function submitQuestion() {
     });
 
     removeMessage(loadingId);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
+    if (resp.status === 429) {
+      const detail = data.detail || {};
+      addMessage('assistant', arabic ? (detail.ar || 'تجاوزت حد الأسئلة المسموح بها. حاول لاحقًا.') : (detail.en || 'Rate limit reached. Please try again later.'));
+      return;
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     addMessage('assistant', data.answer);
+    if (data.questions_remaining !== undefined && data.questions_remaining <= 3) {
+      showToast(arabic ? `تبقى لك ${data.questions_remaining} أسئلة هذه الساعة` : `${data.questions_remaining} questions left this hour`);
+    }
   } catch (e) {
     removeMessage(loadingId);
-    addMessage('assistant', arabic
-      ? 'عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.'
-      : 'Sorry, an error occurred. Please try again.');
+    const offline = !navigator.onLine;
+    addMessage('assistant', offline
+      ? (arabic ? 'أنت غير متصل بالإنترنت. الدردشة تحتاج اتصالًا.' : 'You are offline. Chat requires internet.')
+      : (arabic ? 'عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.' : 'Sorry, an error occurred. Please try again.'));
   } finally {
     submit.disabled = false;
   }

@@ -64,11 +64,20 @@ function renderDhikrPage() {
       : item.count;
     const done = remaining === 0;
 
+    const refId = `dhikr_${currentDhikrTab}_${idx}`;
     return `
       <div class="dhikr-item" id="dhikr-${idx}">
         <div class="dhikr-header">
           <span class="dhikr-title">${item.title}</span>
-          <span class="count-badge ${done ? 'done' : ''}">${done ? '✓' : remaining + 'x'}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="count-badge ${done ? 'done' : ''}">${done ? '✓' : remaining + 'x'}</span>
+            ${typeof bmBtn === 'function' ? bmBtn(refId, 'dhikr', {
+              arabic: item.arabic,
+              translation: item.translation,
+              source: item.source,
+              title: item.title
+            }) : ''}
+          </div>
         </div>
         <div class="arabic">${markVerseNums(item.arabic)}</div>
         <div class="translation">${item.translation}</div>
@@ -144,13 +153,23 @@ function renderDuas() {
         <span id="dua-arrow-${ci}" style="color:var(--text-dim)">▼</span>
       </div>
       <div id="dua-items-${ci}" style="display:none">
-        ${cat.items.map(item => `
+        ${cat.items.map((item, ii) => {
+          const refId = `dua_${ci}_${ii}`;
+          return `
           <div class="card-sm">
             <div class="arabic-sm">${item.arabic}</div>
             <div class="translation">${item.translation}</div>
-            <span class="source-tag">${item.source}</span>
-          </div>
-        `).join('')}
+            <div class="flex-between mt-8">
+              <span class="source-tag">${item.source}</span>
+              ${typeof bmBtn === 'function' ? bmBtn(refId, 'dua', {
+                arabic: item.arabic,
+                translation: item.translation,
+                source: item.source,
+                title: `${cat.category} — ${cat.categoryEn}`
+              }) : ''}
+            </div>
+          </div>`;
+        }).join('')}
       </div>
     </div>
   `).join('');

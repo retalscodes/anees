@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="night-garden">
+<html lang="ar" dir="rtl" data-theme="dark">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
@@ -25,8 +25,42 @@
       <span style="color:var(--text);letter-spacing:0.01em">Anees</span>
       <span style="font-family:'Amiri',serif;color:var(--text-muted);font-size:16px;font-weight:400">أنيس</span>
     </div>
-    <div id="hijri-date">جاري التحميل...</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle-btn" title="تبديل المظهر"></button>
+      <div id="hijri-date">جاري التحميل...</div>
+    </div>
   </header>
+
+  <!-- Offline bar -->
+  <div id="offline-bar">
+    <span>📵</span> أنت غير متصل — بعض الميزات قد لا تعمل
+  </div>
+
+  <!-- PWA Install Banner -->
+  <div id="install-banner">
+    <div class="install-banner-inner">
+      <div class="install-banner-text">
+        <strong>ثبّت أنيس</strong>
+        <span>وصوّل أسرع بدون متصفح</span>
+      </div>
+      <span id="install-ios-hint" style="display:none;font-size:12px;color:var(--text-muted)">
+        اضغط <strong>مشاركة</strong> ثم <strong>إضافة إلى الشاشة الرئيسية</strong>
+      </span>
+      <button id="install-android-btn" class="install-btn" onclick="triggerInstallPrompt()" style="display:none">تثبيت</button>
+      <button class="install-dismiss-btn" onclick="hideInstallBanner()" aria-label="إغلاق">✕</button>
+    </div>
+  </div>
+
+  <!-- Notification Prompt Banner -->
+  <div id="notif-prompt" style="display:none">
+    <div class="notif-prompt-inner">
+      <div class="notif-prompt-text">🔔 فعّل الإشعارات ليذكّرك أنيس بالأذكار والصلاة</div>
+      <div class="notif-prompt-btns">
+        <button class="notif-prompt-ok" onclick="enableNotifFromPrompt()">تفعيل</button>
+        <button class="notif-prompt-skip" onclick="dismissNotifPrompt()">لاحقاً</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Pages -->
   <div id="pages">
@@ -48,6 +82,10 @@
         <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
         <div class="prayer-item"><div class="p-name-ar">...</div><div class="p-time">--:--</div></div>
       </div>
+
+      <!-- Mood Recommender -->
+      <div class="section-title">كيف تشعر الآن؟</div>
+      <div id="mood-strip" class="mood-strip"></div>
 
       <div class="section-title" data-i18n="daily_hadith">حديث اليوم</div>
       <div class="card" id="daily-hadith">
@@ -133,7 +171,10 @@
 
       <!-- Ayah of the Day -->
       <div id="ayah-card">
-        <div class="ayah-label" data-i18n="ayah_today">آية اليوم</div>
+        <div class="flex-between" style="margin-bottom:8px">
+          <div class="ayah-label" data-i18n="ayah_today">آية اليوم</div>
+          <div id="ayah-bm-btn"></div>
+        </div>
         <div id="ayah-arabic">جاري التحميل...</div>
         <div id="ayah-translation"></div>
         <div id="ayah-ref"></div>
@@ -167,25 +208,32 @@
         </div>
       </div>
 
-      <!-- Quran Browser -->
-      <div class="section-title" style="margin-top:4px" data-i18n="quran_label">القرآن الكريم</div>
-      <div id="quran-browser">
-        <input id="surah-search" type="text" placeholder="ابحث عن سورة بالاسم أو الرقم..." dir="rtl"
-          style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:11px 14px;font-size:14px;outline:none;margin-bottom:10px;font-family:'Inter',sans-serif"
-          oninput="filterSurahs(this.value)"/>
-        <div id="surah-grid"></div>
-      </div>
-
-      <!-- Surah Reader -->
-      <div id="surah-reader" style="display:none">
-        <div id="reader-nav">
-          <button id="reader-back-btn" onclick="closeSurahReader()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-            رجوع
+      <!-- Mushaf Page Viewer -->
+      <div class="section-title" style="margin-top:4px">المصحف الكريم</div>
+      <div id="mushaf-viewer">
+        <div class="mushaf-nav-bar">
+          <button id="mushaf-prev-btn" class="mushaf-nav-btn" onclick="mushafPrevPage()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <div id="reader-title"></div>
+          <button class="mushaf-page-label-btn" id="mushaf-page-label" onclick="openMushafGoto()">صفحة ١ من ٦٠٤</button>
+          <button id="mushaf-next-btn" class="mushaf-nav-btn" onclick="mushafNextPage()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
-        <div id="reader-verses"></div>
+        <div id="mushaf-content" class="mushaf-content">
+          <div class="mushaf-loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+        <div class="mushaf-footer">
+          <button id="mushaf-memo-btn" class="mushaf-memo-btn" onclick="togglePageMemorized()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>حفظت هذه الصفحة</span>
+          </button>
+          <span id="mushaf-memo-stat" class="muted" style="font-size:12px">٠ / ٦٠٤ صفحة محفوظة</span>
+        </div>
       </div>
 
       <!-- Goal modal -->
@@ -203,54 +251,91 @@
       </div>
     </div>
 
-    <!-- ═══ MORE ═══ -->
-    <div id="page-more" class="page">
+    <!-- ═══ PROFILE ═══ -->
+    <div id="page-profile" class="page">
+
+      <!-- Profile card -->
+      <div id="profile-card" class="card" style="margin-bottom:12px"></div>
+
+      <!-- Sub-tabs -->
       <div class="dhikr-tabs">
-        <button class="tab-btn active" data-more-tab="qibla" onclick="switchMoreTab('qibla')">القبلة</button>
-        <button class="tab-btn" data-more-tab="names" onclick="switchMoreTab('names')">الأسماء</button>
-        <button class="tab-btn" data-more-tab="fasting" onclick="switchMoreTab('fasting')">الصيام</button>
-        <button class="tab-btn" data-more-tab="settings" onclick="switchMoreTab('settings')">الإعدادات</button>
+        <button class="tab-btn active" data-profile-tab="calendar" onclick="switchProfileTab('calendar')">التقويم</button>
+        <button class="tab-btn" data-profile-tab="bookmarks" onclick="switchProfileTab('bookmarks')">المحفوظات</button>
+        <button class="tab-btn" data-profile-tab="tools" onclick="switchProfileTab('tools')">الأدوات</button>
+        <button class="tab-btn" data-profile-tab="settings" onclick="switchProfileTab('settings')">الإعدادات</button>
       </div>
 
-      <!-- Qibla -->
-      <div id="more-qibla">
-        <div id="qibla-compass">
-          <div id="compass-ring">
-            <canvas id="qibla-canvas"></canvas>
+      <!-- ── Calendar ── -->
+      <div id="profile-calendar">
+        <div id="hijri-calendar"></div>
+      </div>
+
+      <!-- ── Bookmarks ── -->
+      <div id="profile-bookmarks" style="display:none">
+        <div id="profile-bookmarks-list"></div>
+      </div>
+
+      <!-- ── Tools ── -->
+      <div id="profile-tools" style="display:none">
+
+        <!-- Qibla -->
+        <div class="tools-section">
+          <div class="tools-section-hdr" onclick="toggleToolsSection('qibla')">
+            <span>🧭 القبلة</span>
+            <span id="tools-qibla-arrow">▲</span>
           </div>
-          <div id="qibla-degree">--°</div>
-          <div id="qibla-status">جاري تحديد الموقع...</div>
-        </div>
-      </div>
-
-      <!-- 99 Names -->
-      <div id="more-names" style="display:none">
-        <input id="names-search" type="text" placeholder="ابحث عن اسم..." lang="ar"
-          style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:12px 14px;font-size:14px;margin-bottom:14px;outline:none;font-family:'Inter',sans-serif;direction:rtl"/>
-        <div id="names-grid" class="names-grid"></div>
-      </div>
-
-      <!-- Fasting -->
-      <div id="more-fasting" style="display:none">
-        <div class="card" style="text-align:center">
-          <div style="font-family:'Amiri',serif;font-size:17px;color:var(--text-muted);margin-bottom:12px">
-            وَصُومُوا خَيْرٌ لَّكُمْ ۖ إِن كُنتُمْ تَعْلَمُونَ
-          </div>
-          <button class="fast-btn" id="fast-toggle-btn" onclick="toggleFast()">نويت الصيام — انقر للتسجيل</button>
-          <div class="fast-timer" id="fast-timer">--:--</div>
-          <div class="muted">مدة الصيام</div>
-        </div>
-
-        <div class="section-title mt-12">سجل الصيام</div>
-        <div class="card">
-          <div id="fast-log">
-            <p class="muted center" style="padding:16px">لا يوجد سجل بعد</p>
+          <div id="tools-qibla-body">
+            <div id="qibla-compass">
+              <div id="compass-ring">
+                <canvas id="qibla-canvas"></canvas>
+              </div>
+              <div id="qibla-degree">--°</div>
+              <div id="qibla-status">جاري تحديد الموقع...</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Settings -->
-      <div id="more-settings" style="display:none">
+        <!-- 99 Names -->
+        <div class="tools-section">
+          <div class="tools-section-hdr" onclick="toggleToolsSection('names')">
+            <span>✨ الأسماء الحسنى</span>
+            <span id="tools-names-arrow">▼</span>
+          </div>
+          <div id="tools-names-body" style="display:none">
+            <input id="names-search" type="text" placeholder="ابحث عن اسم..." lang="ar"
+              style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:12px 14px;font-size:14px;margin-bottom:14px;outline:none;font-family:'Inter',sans-serif;direction:rtl"/>
+            <div id="names-grid" class="names-grid"></div>
+          </div>
+        </div>
+
+        <!-- Fasting -->
+        <div class="tools-section">
+          <div class="tools-section-hdr" onclick="toggleToolsSection('fasting')">
+            <span>🌙 الصيام</span>
+            <span id="tools-fasting-arrow">▼</span>
+          </div>
+          <div id="tools-fasting-body" style="display:none">
+            <div class="card" style="text-align:center">
+              <div style="font-family:'Amiri',serif;font-size:17px;color:var(--text-muted);margin-bottom:12px">
+                وَصُومُوا خَيْرٌ لَّكُمْ ۖ إِن كُنتُمْ تَعْلَمُونَ
+              </div>
+              <button class="fast-btn" id="fast-toggle-btn" onclick="toggleFast()">نويت الصيام — انقر للتسجيل</button>
+              <div class="fast-timer" id="fast-timer">--:--</div>
+              <div class="muted">مدة الصيام</div>
+            </div>
+            <div class="section-title mt-12">سجل الصيام</div>
+            <div class="card">
+              <div id="fast-log">
+                <p class="muted center" style="padding:16px">لا يوجد سجل بعد</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /profile-tools -->
+
+      <!-- ── Settings ── -->
+      <div id="profile-settings" style="display:none">
         <div class="card">
           <div class="setting-row">
             <div class="setting-label">
@@ -274,6 +359,13 @@
           </div>
           <div class="setting-row">
             <div class="setting-label">
+              المظهر
+              <small>داكن / فاتح</small>
+            </div>
+            <button class="wird-btn" style="width:auto;padding:8px 14px" onclick="toggleTheme()">تبديل</button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
               <span data-i18n="settings_lang">اللغة</span>
               <small>العربية / English</small>
             </div>
@@ -283,8 +375,15 @@
           </div>
           <div class="setting-row">
             <div class="setting-label">
+              وضع الأطفال 🌟
+              <small>قصص الأنبياء وألوان مبهجة</small>
+            </div>
+            <button id="kids-mode-toggle" class="wird-btn" style="width:auto;padding:8px 14px" onclick="toggleKidsMode()">تفعيل وضع الأطفال 🌟</button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
               الإصدار
-              <small>Anees v1.0</small>
+              <small>Anees v2.0</small>
             </div>
             <span class="muted">🌙</span>
           </div>
@@ -298,8 +397,71 @@
             <a href="https://islamweb.net/ar/" target="_blank" style="color:var(--primary-light)">islamweb.net</a>
           </div>
         </div>
+
+        <!-- Privacy Policy -->
+        <div class="section-title mt-12">سياسة الخصوصية</div>
+        <div class="card privacy-card" style="direction:rtl;line-height:1.85">
+          <p><strong>أنيس لا يجمع بياناتك الشخصية.</strong> جميع بياناتك — اسمك واستخداماتك ومحفوظاتك — تُحفظ محليًا على جهازك فقط عبر localStorage ولا تُرسل إلى أي خادم.</p>
+          <p style="margin-top:10px"><strong>الأذونات المطلوبة:</strong></p>
+          <ul style="margin:6px 0 0 0;padding-right:16px;font-size:13px;color:var(--text-muted)">
+            <li>📍 الموقع — لاتجاه القبلة ومواقيت الصلاة، لا يُخزَّن</li>
+            <li>🔔 الإشعارات — لتذكيرات الأذكار، لا تُرسل لأحد</li>
+          </ul>
+          <p style="margin-top:10px"><strong>الخدمات الخارجية:</strong></p>
+          <ul style="margin:6px 0 0 0;padding-right:16px;font-size:13px;color:var(--text-muted)">
+            <li>مواقيت الصلاة: aladhan.com</li>
+            <li>نص القرآن الكريم: alquran.cloud</li>
+            <li>الفتاوى: islamqa.info و islamweb.net</li>
+            <li>المساعد الذكي: Google Gemini API</li>
+          </ul>
+          <p style="margin-top:10px;font-size:12px;color:var(--text-muted)">للتواصل: <a href="mailto:retal.j.2.x@gmail.com" style="color:var(--primary-light)">retal.j.2.x@gmail.com</a></p>
+        </div>
       </div>
-    </div>
+
+    </div><!-- /page-profile -->
+
+    <!-- ═══ STORIES (Kids Mode) ═══ -->
+    <div id="page-stories" class="page">
+
+      <!-- Stories list view -->
+      <div id="stories-list-view">
+        <div class="kids-header">
+          <div class="kids-banner-title">📚 قصص الأنبياء</div>
+          <div class="kids-banner-sub">من ابن كثير رحمه الله</div>
+        </div>
+        <div id="story-grid" class="story-grid"></div>
+      </div>
+
+      <!-- Story reader view -->
+      <div id="story-reader" style="display:none;flex-direction:column;min-height:100%">
+        <div class="story-reader-header" style="background:var(--story-color,var(--primary))">
+          <button class="story-back-btn" onclick="closeStory()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="story-reader-title-row">
+            <div id="story-reader-title" class="story-reader-title"></div>
+          </div>
+        </div>
+        <div class="story-reader-body">
+          <div class="story-source-badge">
+            <span id="story-reader-source"></span>
+            <span class="story-source-ref" id="story-reader-ref"></span>
+          </div>
+          <div id="story-reader-body" class="story-reader-text"></div>
+          <div class="story-nav-footer">
+            <button class="story-nav-arrow" onclick="prevStory()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+              السابق
+            </button>
+            <button class="story-nav-arrow" onclick="nextStory()">
+              التالي
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-stories -->
 
   </div><!-- /pages -->
 
@@ -323,17 +485,23 @@
       </svg>
       <span data-i18n="nav_ask">اسأل</span>
     </button>
+    <button class="nav-btn" data-nav="stories" onclick="navigate('stories')" style="display:none">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+      <span>قصص</span>
+    </button>
     <button class="nav-btn" data-nav="quran" onclick="navigate('quran')">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
       </svg>
       <span data-i18n="nav_quran">القرآن</span>
     </button>
-    <button class="nav-btn" data-nav="more" onclick="navigate('more')">
+    <button class="nav-btn" data-nav="profile" onclick="navigate('profile')">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
       </svg>
-      <span data-i18n="nav_more">المزيد</span>
+      <span data-i18n="nav_profile">ملفي</span>
     </button>
   </nav>
 
@@ -362,6 +530,32 @@
   </div>
 </div>
 
+<!-- Edit Name Modal -->
+<div id="edit-name-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;align-items:flex-end;padding:16px">
+  <div class="modal-sheet">
+    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--text);margin-bottom:16px;text-align:right">اسمك في أنيس</div>
+    <input id="edit-name-input" type="text" placeholder="مثال: أحمد، سارة..." maxlength="40"
+      style="width:100%;background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px 14px;font-size:16px;font-family:'Amiri',serif;outline:none;direction:rtl"/>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="wird-btn primary" onclick="saveProfileName()">حفظ</button>
+      <button class="wird-btn" onclick="document.getElementById('edit-name-modal').style.display='none'">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mushaf Go-To-Page Modal -->
+<div id="mushaf-goto-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;align-items:flex-end;padding:16px">
+  <div class="modal-sheet">
+    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--text);margin-bottom:14px;text-align:right">الانتقال إلى صفحة</div>
+    <input id="mushaf-goto-input" type="number" min="1" max="604" placeholder="١ - ٦٠٤"
+      style="width:100%;background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px;font-size:18px;text-align:center;outline:none;direction:ltr"/>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="wird-btn primary" onclick="confirmMushafGoto()">انتقال</button>
+      <button class="wird-btn" onclick="document.getElementById('mushaf-goto-modal').style.display='none'">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- Data -->
@@ -375,6 +569,9 @@
 <script src="/js/qa.js"></script>
 <script src="/js/quran.js"></script>
 <script src="/js/more.js"></script>
+<script src="/js/profile.js"></script>
+<script src="/data/stories.js"></script>
+<script src="/js/kids.js"></script>
 <script src="/js/app.js"></script>
 
 </body>

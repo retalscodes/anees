@@ -233,14 +233,25 @@ function updateCountdown() {
 
 // ─── Hijri date & hadith ────────────────────────────────────────
 
-async function loadHijriDate() {
+function loadHijriDate() {
+  const MONTHS_AR = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
   try {
-    const resp = await fetch('/api/prayer/hijri');
-    const data = await resp.json();
-    const h = data.data.hijri;
+    const fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+      day: 'numeric', month: 'numeric', year: 'numeric'
+    });
+    const parts = fmt.formatToParts(new Date());
+    const d = parseInt(parts.find(p => p.type === 'day').value);
+    const m = parseInt(parts.find(p => p.type === 'month').value);
+    const y = parseInt(parts.find(p => p.type === 'year').value);
     const el = document.getElementById('hijri-date');
-    if (el) el.textContent = `${h.day} ${h.month.ar} ${h.year}هـ`;
-  } catch { /* silent */ }
+    if (el) el.textContent = `${d} ${MONTHS_AR[m - 1]} ${y}هـ`;
+  } catch {
+    fetch('/api/prayer/hijri').then(r => r.json()).then(data => {
+      const h = data.data.hijri;
+      const el = document.getElementById('hijri-date');
+      if (el) el.textContent = `${h.day} ${h.month.ar} ${h.year}هـ`;
+    }).catch(() => {});
+  }
 }
 
 async function loadDailyHadith() {
@@ -249,12 +260,21 @@ async function loadDailyHadith() {
     const h = await resp.json();
     const el = document.getElementById('daily-hadith');
     if (!el) return;
+    const refId = `hadith_${h.source}_${(h.text || '').slice(0, 20)}`.replace(/\s+/g, '_');
     el.innerHTML = `
       <div class="hadith-text">${h.text}</div>
       <div class="hadith-translation">${h.translation}</div>
-      <div class="flex-between">
+      <div class="flex-between mt-8">
         <span class="source-tag">${h.source}</span>
-        <span class="muted">${h.narrator}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="muted">${h.narrator}</span>
+          ${typeof bmBtn === 'function' ? bmBtn(refId, 'hadith', {
+            arabic: h.text,
+            translation: h.translation,
+            source: h.source,
+            title: h.narrator
+          }) : ''}
+        </div>
       </div>
     `;
   } catch { /* silent */ }

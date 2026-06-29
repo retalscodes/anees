@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
-:root {
+:root,
+[data-theme="dark"] {
   --primary: #3a7a6a;
   --primary-dark: #1e5248;
   --primary-light: #6ec4b4;
@@ -16,6 +17,27 @@
   --danger: #e05555;
   --nav-h: 68px;
   --header-h: 60px;
+  --shadow: rgba(0,0,0,0.4);
+}
+
+/* ─── Light theme ─── */
+[data-theme="light"] {
+  --primary: #2d7a5a;
+  --primary-dark: #1d5c42;
+  --primary-light: #3a9e7e;
+  --gold: #b87820;
+  --gold-light: #d49020;
+  --bg: #f5f2ed;
+  --bg-card: #ffffff;
+  --bg-card2: #edeae4;
+  --text: #1a2020;
+  --text-muted: #527268;
+  --text-dim: #a8bbb5;
+  --border: #ddd8cf;
+  --danger: #c03838;
+  --nav-h: 68px;
+  --header-h: 60px;
+  --shadow: rgba(0,0,0,0.10);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -1229,3 +1251,775 @@ select.setting-select {
   margin-top: 2px;
   font-family: 'Amiri', sans-serif;
 }
+
+/* ─── Theme Toggle ─── */
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.theme-toggle-btn:active { opacity: 0.7; transform: scale(0.92); }
+
+/* ─── Notification Prompt ─── */
+#notif-prompt {
+  background: linear-gradient(135deg, #0e1e2a, #1a3a3a);
+  border-bottom: 1px solid rgba(110,196,180,0.2);
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+.notif-prompt-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.notif-prompt-text {
+  font-size: 13px;
+  color: #c8e8e0;
+  flex: 1;
+  min-width: 0;
+}
+.notif-prompt-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.notif-prompt-ok {
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.notif-prompt-skip {
+  background: transparent;
+  border: 1px solid rgba(110,196,180,0.3);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ─── Mushaf Viewer ─── */
+#mushaf-viewer {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.mushaf-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card2);
+}
+.mushaf-nav-btn {
+  width: 38px;
+  height: 38px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.mushaf-nav-btn:active { background: var(--primary-dark); border-color: var(--primary); color: #fff; }
+.mushaf-nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+.mushaf-page-label-btn {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-family: 'Amiri', serif;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.mushaf-page-label-btn:active { background: rgba(232,192,96,0.1); }
+.mushaf-content {
+  min-height: 300px;
+  padding: 20px 18px;
+  direction: rtl;
+}
+.mushaf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+.mushaf-surah-header {
+  text-align: center;
+  margin: 10px 0 6px;
+}
+.mushaf-surah-name {
+  font-family: 'Amiri', serif;
+  font-size: 20px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.mushaf-bismillah {
+  font-family: 'Amiri', serif;
+  font-size: 20px;
+  color: var(--text-muted);
+  padding: 8px 0 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.mushaf-page-text {
+  font-family: 'Amiri', serif;
+  font-size: 23px;
+  line-height: 2.1;
+  color: var(--text);
+  text-align: justify;
+  direction: rtl;
+  word-spacing: 0.1em;
+}
+.mushaf-verse { display: inline; }
+.mushaf-vnum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(232,192,96,0.12);
+  border: 1px solid rgba(232,192,96,0.25);
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--gold);
+  vertical-align: middle;
+  margin: 0 2px;
+}
+.mushaf-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card2);
+  gap: 10px;
+}
+.mushaf-memo-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: 'Amiri', serif;
+  transition: all 0.2s;
+}
+.mushaf-memo-btn.memorized {
+  background: rgba(232,192,96,0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.mushaf-memo-btn:active { opacity: 0.7; }
+
+/* ─── Profile Page ─── */
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-card2);
+  border: 2px solid var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.profile-name-text {
+  font-family: 'Amiri', serif;
+  font-size: 20px;
+  color: var(--text);
+}
+.profile-stats-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.profile-stat-pill {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.profile-stat-pill strong { color: var(--text); }
+
+/* ─── Hijri Calendar ─── */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 4px 0;
+}
+.cal-nav-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.cal-nav-btn:active { background: var(--primary-dark); border-color: var(--primary); color: #fff; }
+.cal-title { text-align: center; }
+.cal-month-ar {
+  font-family: 'Amiri', serif;
+  font-size: 22px;
+  color: var(--text);
+  line-height: 1.2;
+}
+.cal-year-label { font-size: 12px; color: var(--gold); margin-top: 2px; }
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.cal-wd {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  font-weight: 500;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: default;
+  position: relative;
+  transition: background 0.15s;
+}
+.cal-cell.cal-has-event { cursor: pointer; }
+.cal-cell.cal-has-event:active { background: var(--bg-card2); }
+.cal-cell.cal-today {
+  background: var(--primary);
+  border-radius: 10px;
+}
+.cal-cell.cal-today .cal-day-num { color: #fff; font-weight: 700; }
+.cal-cell.cal-friday .cal-day-num { color: var(--primary-light); }
+.cal-day-num {
+  font-family: 'Amiri', serif;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1;
+}
+.cal-event-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  border-radius: 50%;
+  margin-top: 2px;
+}
+.cal-events-section { margin-top: 4px; }
+.cal-event-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cal-event-row:last-child { border-bottom: none; }
+.cal-event-day-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(232,192,96,0.12);
+  border: 1px solid rgba(232,192,96,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Amiri', serif;
+  font-size: 14px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.cal-event-name {
+  font-family: 'Amiri', serif;
+  font-size: 16px;
+  color: var(--text);
+}
+
+/* ─── Tools Section ─── */
+.tools-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.tools-section-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+.tools-section-hdr:active { background: var(--bg-card2); }
+#tools-qibla-body,
+#tools-names-body,
+#tools-fasting-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Bookmarks ─── */
+.bookmarks-empty {
+  text-align: center;
+  padding: 44px 20px;
+}
+.bookmark-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.bookmark-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.bookmark-type-badge {
+  font-size: 11px;
+  color: var(--primary-light);
+  background: rgba(110,196,180,0.1);
+  border: 1px solid rgba(110,196,180,0.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+.bookmark-delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+.bookmark-delete-btn:active { color: var(--danger); }
+.bookmark-title {
+  font-size: 12px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.bookmark-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 19px;
+  line-height: 1.8;
+  color: var(--text);
+  direction: rtl;
+  text-align: right;
+  margin-bottom: 6px;
+}
+.bookmark-trans {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-style: italic;
+  direction: ltr;
+  text-align: left;
+  margin-bottom: 6px;
+}
+
+/* ─── Bookmark Button ─── */
+.bm-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px 5px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.bm-btn:active { transform: scale(0.88); }
+.bm-btn.bm-saved { color: var(--gold); }
+
+/* ─── Light theme overrides ─── */
+[data-theme="light"] #next-prayer-card {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1a5248 100%);
+}
+[data-theme="light"] .card { box-shadow: 0 1px 8px var(--shadow); }
+[data-theme="light"] #header {
+  box-shadow: 0 1px 12px var(--shadow);
+}
+[data-theme="light"] #bottom-nav {
+  box-shadow: 0 -1px 12px var(--shadow);
+}
+[data-theme="light"] #wird-card {
+  background: linear-gradient(135deg, #e8f4ee, #d4ece0);
+}
+[data-theme="light"] #ayah-card {
+  background: linear-gradient(135deg, #f0ede5, #e8f0e8);
+}
+[data-theme="light"] .cal-cell.cal-today { background: var(--primary); }
+
+
+/* ─── Offline Bar ─── */
+#offline-bar {
+  display: none;
+  background: #7a4a1e;
+  color: #fde8c0;
+  text-align: center;
+  font-size: 13px;
+  padding: 8px 16px;
+  position: sticky;
+  top: var(--header-h);
+  z-index: 80;
+}
+#offline-bar.visible { display: block; }
+
+/* ─── PWA Install Banner ─── */
+#install-banner {
+  display: none;
+  position: fixed;
+  bottom: calc(var(--nav-h) + 12px);
+  left: 12px; right: 12px;
+  z-index: 120;
+  background: var(--bg-card2);
+  border: 1px solid var(--primary);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  animation: slideUpFade 0.3s ease;
+}
+#install-banner.visible { display: block; }
+.install-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.install-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+.install-banner-text strong { color: var(--text); }
+.install-banner-text span { color: var(--text-muted); font-size: 12px; }
+.install-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.install-dismiss-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+}
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Mood Recommender ─── */
+.mood-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 16px 4px;
+  margin: 0 -16px 4px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mood-strip::-webkit-scrollbar { display: none; }
+.mood-card {
+  flex-shrink: 0;
+  width: 130px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 10px 12px;
+  text-align: center;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: border-color 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+.mood-card:active { transform: scale(0.96); }
+.mood-card:hover { border-color: var(--primary); }
+.mood-emoji { font-size: 26px; margin-bottom: 2px; }
+.mood-label {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.mood-surah {
+  font-family: 'Amiri', serif;
+  font-size: 14px;
+  color: var(--gold);
+  margin-top: 2px;
+}
+.mood-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* ─── Privacy Policy card ─── */
+.privacy-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.privacy-card strong { color: var(--text); }
+
+/* ═══════════════════════════════════════════════════
+   KIDS MODE
+   ═══════════════════════════════════════════════════ */
+
+[data-kids="true"] {
+  --primary:       #7C3AED;
+  --primary-dark:  #5B21B6;
+  --primary-light: #A78BFA;
+  --gold:          #F59E0B;
+  --gold-light:    #FCD34D;
+  --bg:            #FDF8F0;
+  --bg-card:       #FFFFFF;
+  --bg-card2:      #FEF3E2;
+  --text:          #1C1917;
+  --text-muted:    #78716C;
+  --text-dim:      #D6CFCA;
+  --border:        #F0E8DC;
+  --shadow:        rgba(0,0,0,0.08);
+  --nav-h:         72px;
+}
+
+/* Bigger rounded UI in kids mode */
+[data-kids="true"] .card           { border-radius: 20px; }
+[data-kids="true"] #bottom-nav     { background: #fff; border-top: 2px solid var(--border); }
+[data-kids="true"] .nav-btn        { font-size: 11px; }
+[data-kids="true"] #header         { background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); }
+[data-kids="true"] .logo span      { color: #fff !important; }
+[data-kids="true"] #hijri-date     { color: rgba(255,255,255,0.85); }
+[data-kids="true"] .theme-toggle-btn { color: #fff; }
+[data-kids="true"] #next-prayer-card { background: linear-gradient(135deg, #7C3AED, #F59E0B); }
+[data-kids="true"] .section-title  { font-size: 17px; }
+
+/* Kids toggle button active state */
+button.kids-active {
+  background: #7C3AED !important;
+  color: #fff !important;
+  border-color: #7C3AED !important;
+}
+
+/* ─── Stories page ─── */
+.kids-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--gold) 100%);
+  margin: -16px -16px 20px;
+  padding: 28px 20px 24px;
+  border-radius: 0 0 28px 28px;
+  text-align: center;
+}
+.kids-banner-title {
+  font-family: 'Amiri', serif;
+  font-size: 26px;
+  color: #fff;
+  font-weight: 700;
+}
+.kids-banner-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  margin-top: 4px;
+}
+
+/* ─── Story grid ─── */
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 0 16px;
+}
+
+.story-card {
+  background: var(--card-color, var(--primary));
+  border: none;
+  border-radius: 20px;
+  padding: 22px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  transition: transform 0.18s, box-shadow 0.18s;
+  animation: storyCardIn 0.4s both;
+  min-height: 110px;
+}
+.story-card:active { transform: scale(0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+@keyframes storyCardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.story-card-emoji {
+  font-size: 34px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.story-card-title {
+  font-family: 'Amiri', serif;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ─── Story reader ─── */
+.story-reader-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--story-color, var(--primary));
+  border-radius: 0 0 24px 24px;
+  margin: -16px -16px 20px;
+}
+.story-back-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  flex-shrink: 0;
+}
+.story-reader-title-row { flex: 1; text-align: center; }
+.story-reader-title {
+  font-family: 'Amiri', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.story-reader-body { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+
+.story-source-badge {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.story-source-badge span:first-child {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+.story-source-ref {
+  font-size: 11px;
+  color: var(--text-muted) !important;
+}
+
+.story-reader-text {
+  font-family: 'Amiri', serif;
+  font-size: 18px;
+  line-height: 2.1;
+  color: var(--text);
+  direction: rtl;
+  white-space: pre-wrap;
+  flex: 1;
+}
+
+.story-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 0 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.story-nav-arrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+.story-nav-arrow:active { opacity: 0.7; }
